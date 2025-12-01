@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "Goalkeeper Training App",
+    "description": "Comprehensive goalkeeper training management"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "remember": "Remember me",
+    "forgotPassword": "Forgot your password?",
+    "noAccount": "Don't have an account?",
+    "register": "Register",
+    "welcome": "Welcome back",
+    "loginSubtitle": "Enter your credentials to access"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "teams": "Teams",
+    "goalkeepers": "Goalkeepers",
+    "planning": "Planning",
+    "sessions": "Sessions",
+    "tasks": "Tasks",
+    "statistics": "Statistics",
+    "penalties": "Penalties",
+    "matchAnalysis": "Match Analysis",
+    "settings": "Settings"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  }
+  ,
+  "editor": {
+    "title": "Tactical Training Editor",
+    "subtitle": "Design and organize goalkeeper drills",
+    "addElement": "Add element",
+    "exportPng": "Export PNG",
+    "exportJson": "Export JSON",
+    "clearCanvas": "Clear canvas",
+    "elements": "Elements",
+    "tools": "Tools",
+    "layers": "Layers",
+    "properties": "Properties",
+    "fieldView": "Field view",
+    "save": "Save design",
+    "update": "Update design",
+    "myDesigns": "My designs",
+    "load": "Load",
+    "delete": "Delete",
+    "titlePlaceholder": "Design title",
+    "saving": "Saving..."
+  }
+}

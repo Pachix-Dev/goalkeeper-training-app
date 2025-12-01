@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "Goalkeeper Training App",
+    "description": "Gestión integral del entrenamiento de porteros"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "logout": "Cerrar Sesión",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "remember": "Recordarme",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes cuenta?",
+    "register": "Registrarse",
+    "welcome": "Bienvenido de nuevo",
+    "loginSubtitle": "Ingresa tus credenciales para acceder"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "teams": "Equipos",
+    "goalkeepers": "Porteros",
+    "planning": "Planificación",
+    "sessions": "Sesiones",
+    "tasks": "Tareas",
+    "statistics": "Estadísticas",
+    "penalties": "Penaltis",
+    "matchAnalysis": "Análisis de Partido",
+    "settings": "Configuración"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  }
+  ,
+  "editor": {
+    "title": "Editor Táctico de Entrenamientos",
+    "subtitle": "Dibuja y organiza tareas para porteros",
+    "addElement": "Agregar elemento",
+    "exportPng": "Exportar PNG",
+    "exportJson": "Exportar JSON",
+    "clearCanvas": "Limpiar lienzo",
+    "elements": "Elementos",
+    "tools": "Herramientas",
+    "layers": "Capas",
+    "properties": "Propiedades",
+    "fieldView": "Vista de cancha",
+    "save": "Guardar diseño",
+    "update": "Actualizar diseño",
+    "myDesigns": "Mis diseños",
+    "load": "Cargar",
+    "delete": "Eliminar",
+    "titlePlaceholder": "Título del diseño",
+    "saving": "Guardando..."
+  }
+}

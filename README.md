@@ -1,36 +1,141 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Goalkeeper Training App
 
-## Getting Started
+Aplicación para la gestión integral del entrenamiento de porteros.
 
-First, run the development server:
+## Características Implementadas
+
+### ✅ Módulo de Login
+
+- Sistema de autenticación completo
+- Formulario de login con validación
+- Recordar sesión
+- Gestión de estado de autenticación
+
+### ✅ Internacionalización (i18n)
+
+- Soporte para Español e Inglés
+- Cambio de idioma en tiempo real
+- Traducciones completas para toda la interfaz
+
+### 🚧 Módulos Futuros
+
+- **Equipos**: Gestiona tus equipos
+- **Porteros**: Administra tus porteros
+- **Planificación**: Planifica entrenamientos
+- **Sesiones**: Crea y gestiona sesiones
+- **Tareas**: Biblioteca de tareas
+- **Estadísticas**: Analiza estadísticas
+- **Penaltis**: Scouting de penaltis
+- **Análisis de Partido**: Análisis de acciones en partido
+
+## Tecnologías
+
+- **Next.js 16** - Framework React
+- **TypeScript** - Tipado estático
+- **Tailwind CSS** - Estilos
+- **next-intl** - Internacionalización
+- **React Context API** - Gestión de estado
+
+## Comenzar
+
+1. **Instalar dependencias:**
+
+```bash
+npm install
+```
+
+2. **Ejecutar en desarrollo:**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. **Abrir en el navegador:**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+La aplicación redirigirá automáticamente a `/es/login` (español) o puedes acceder a `/en/login` (inglés).
 
-## Learn More
+## Credenciales de Prueba
 
-To learn more about Next.js, take a look at the following resources:
+Por ahora, el sistema acepta cualquier email y contraseña para demostración. En producción, esto se conectará a una API real de autenticación.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Estructura del Proyecto
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+goalkeeper-training-app/
+├── app/
+│   ├── [locale]/           # Rutas internacionalizadas
+│   │   ├── login/          # Página de login
+│   │   ├── dashboard/      # Dashboard principal
+│   │   └── layout.tsx      # Layout con providers
+│   ├── globals.css         # Estilos globales
+│   ├── layout.tsx          # Layout raíz
+│   └── page.tsx            # Redirección inicial
+├── components/
+│   ├── ui/                 # Componentes UI reutilizables
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   └── Card.tsx
+│   └── LanguageSwitcher.tsx
+├── lib/
+│   ├── contexts/
+│   │   └── AuthContext.tsx # Contexto de autenticación
+│   └── types/
+│       └── auth.ts         # Tipos TypeScript
+├── messages/
+│   ├── es.json            # Traducciones español
+│   └── en.json            # Traducciones inglés
+├── i18n.ts                # Configuración i18n
+└── middleware.ts          # Middleware de Next.js
+```
 
-## Deploy on Vercel
+## Características del Login
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- ✅ Diseño responsive
+- ✅ Validación de formularios
+- ✅ Estados de carga
+- ✅ Mensajes de error
+- ✅ Recordar sesión (localStorage)
+- ✅ Cambio de idioma ES/EN
+- ✅ Redirección automática al dashboard
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Características del Dashboard
+
+- ✅ Protección de ruta (requiere autenticación)
+- ✅ Información del usuario
+- ✅ Botón de cerrar sesión
+- ✅ Grid de módulos disponibles
+- ✅ Estadísticas rápidas
+- ✅ Diseño responsive
+
+## Próximos Pasos
+
+1. Implementar módulo de Equipos
+2. Implementar módulo de Porteros
+3. Implementar módulo de Planificación
+4. Implementar módulo de Sesiones
+5. Implementar módulo de Tareas
+6. Implementar módulo de Estadísticas
+7. Implementar módulo de Penaltis
+8. Implementar módulo de Análisis de Partido
+9. Conectar con backend/API real
+10. Implementar base de datos
+
+## Comandos Disponibles
+
+```bash
+# Desarrollo
+npm run dev
+
+# Build de producción
+npm run build
+
+# Ejecutar producción
+npm run start
+
+# Linter
+npm run lint
+```
