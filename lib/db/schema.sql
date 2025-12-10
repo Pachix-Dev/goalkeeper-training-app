@@ -159,6 +159,24 @@ CREATE TABLE IF NOT EXISTS session_tasks (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ================================================
+-- TABLA: training_designs (Disenos tacticos del editor)
+-- ================================================
+CREATE TABLE IF NOT EXISTS training_designs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  locale VARCHAR(10),
+  data LONGTEXT NOT NULL COMMENT 'JSON serializado del editor',
+  training_session_id INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (training_session_id) REFERENCES training_sessions(id) ON DELETE SET NULL,
+  INDEX idx_user_id (user_id),
+  INDEX idx_training_session_id (training_session_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ================================================
 -- TABLA: goalkeeper_attendance (Asistencia de porteros)
 -- ================================================
 CREATE TABLE IF NOT EXISTS goalkeeper_attendance (

@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
   try {
     const auth = await authenticateRequest(req);
     if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    const designs = await TrainingDesignModel.listByUser(auth.user.id);
+    const designs = await TrainingDesignModel.listByUser(auth.id);
     return NextResponse.json({ designs });
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await req.json();
     const validated = createDesignSchema.parse(body);
-    const created = await TrainingDesignModel.create(auth.user.id, validated);
+    const created = await TrainingDesignModel.create(auth.id, validated);
     return NextResponse.json({ design: created }, { status: 201 });
   } catch (e: any) {
     if (e.name === 'ZodError') {

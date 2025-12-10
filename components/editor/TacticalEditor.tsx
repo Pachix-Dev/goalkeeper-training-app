@@ -1,20 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useState, useMemo } from 'react';
-import { Tldraw, type TLShape, type Editor } from '@tldraw/tldraw';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Tldraw, type Editor, type TLShape } from '@tldraw/tldraw';
 import { useLocale } from 'next-intl';
 import '@tldraw/tldraw/tldraw.css';
 import { useTranslations } from 'next-intl';
-import { 
-  GoalkeeperShapeUtil, 
-  ConeShapeUtil, 
-  BallShapeUtil, 
-  DummyShapeUtil, 
+import {
+  GoalkeeperShapeUtil,
+  ConeShapeUtil,
+  BallShapeUtil,
+  DummyShapeUtil,
   LadderShapeUtil,
   HoopShapeUtil,
   RebounderShapeUtil,
   GoalShapeUtil,
-  HurdleShapeUtil
+  HurdleShapeUtil,
+  FieldBackgroundShapeUtil
 } from './shapes';
 
 // Elementos deportivos con shapes SVG personalizadas
@@ -42,27 +43,50 @@ const PALETTE: PaletteItem[] = [
   { id: 'goalkeeper', labelKey: 'Portero', type: 'custom', customType: 'goalkeeper', props: { w: 40, h: 40, color: '#FFA500' } },
   { id: 'coach', labelKey: 'Entrenador', type: 'geo', geo: { w: 42, h: 42, fill: '#3F51B5', geo: 'circle' } },
   { id: 'cone', labelKey: 'Cono', type: 'custom', customType: 'cone', props: { w: 24, h: 34, color: '#FF6B00' } },
-  { id: 'ball', labelKey: 'Balón', type: 'custom', customType: 'ball', props: { w: 22, h: 22, color: '#FFFFFF' } },
+  { id: 'ball', labelKey: 'Balon', type: 'custom', customType: 'ball', props: { w: 22, h: 22, color: '#FFFFFF' } },
   { id: 'ladder', labelKey: 'Escalera', type: 'custom', customType: 'ladder', props: { w: 120, h: 20, color: '#9C27B0' } },
   { id: 'hoop', labelKey: 'Aro', type: 'custom', customType: 'hoop', props: { w: 46, h: 46, color: '#2196F3' } },
-  { id: 'dummy', labelKey: 'Muñeco', type: 'custom', customType: 'dummy', props: { w: 26, h: 60, color: '#FF5722' } },
+  { id: 'dummy', labelKey: 'Muneco', type: 'custom', customType: 'dummy', props: { w: 26, h: 60, color: '#FF5722' } },
   { id: 'rebounder', labelKey: 'Reboteador', type: 'custom', customType: 'rebounder', props: { w: 80, h: 50, color: '#009688' } },
-  { id: 'goal', labelKey: 'Portería', type: 'custom', customType: 'goal', props: { w: 140, h: 60, color: '#FFFFFF' } },
+  { id: 'goal', labelKey: 'Porteria', type: 'custom', customType: 'goal', props: { w: 140, h: 60, color: '#FFFFFF' } },
   { id: 'hurdle', labelKey: 'Valla', type: 'custom', customType: 'hurdle', props: { w: 80, h: 24, color: '#FFD400' } },
   { id: 'textNote', labelKey: 'Nota', type: 'text', text: 'Nota' }
 ];
 
-// Vistas de cancha simples (background color y grid opcional)
-const FIELD_VIEWS = [
-  { id: 'full', label: 'Cancha completa', color: '#6ba04d' },
-  { id: 'half', label: 'Media cancha', color: '#7fb857' },
-  { id: 'goal_area', label: 'Zona portería', color: '#88c162' }
+type FieldView = {
+  id: string;
+  label: string;
+  type: 'color' | 'image';
+  color?: string;
+  image?: string;
+};
+
+// Vistas de cancha con imagenes en /public/canchas
+const FIELD_VIEWS: FieldView[] = [
+  { id: 'corner-1', label: 'Corner 1', type: 'image', image: '/canchas/Corner1.jpg' },
+  { id: 'corner-2', label: 'Corner 2', type: 'image', image: '/canchas/Corner2.jpg' },
+  { id: 'frontal-1', label: 'Frontal 1', type: 'image', image: '/canchas/Frontal1.jpg' },
+  { id: 'frontal-2', label: 'Frontal 2', type: 'image', image: '/canchas/Frontal2.jpg' },
+  { id: 'lateral-area-grande-1', label: 'Lateral area grande 1', type: 'image', image: '/canchas/LateralAreaGrande1.jpg' },
+  { id: 'lateral-area-grande-2', label: 'Lateral area grande 2', type: 'image', image: '/canchas/LateralAreaGrande2.jpg' },
+  { id: 'lateral-area-grande-3', label: 'Lateral area grande 3', type: 'image', image: '/canchas/LateralAreaGrande3.jpg' },
+  { id: 'lateral-area-grande-4', label: 'Lateral area grande 4', type: 'image', image: '/canchas/LateralAreaGrande4.jpg' },
+  { id: 'lateral-area-grande-5', label: 'Lateral area grande 5', type: 'image', image: '/canchas/LateralAreaGrande5.jpg' },
+  { id: 'lateral-medio-campo', label: 'Lateral medio campo', type: 'image', image: '/canchas/LateralMedioCampo.jpg' },
+  { id: 'medio-campo-frontal', label: 'Medio campo frontal', type: 'image', image: '/canchas/MedioCampoFrontal.jpg' },
+  { id: 'trasera-area-grande-1', label: 'Trasera area grande 1', type: 'image', image: '/canchas/TraseraAreaGrande.jpg' },
+  { id: 'trasera-area-grande-2', label: 'Trasera area grande 2', type: 'image', image: '/canchas/TraseraAreaGrande2.jpg' },
+  { id: 'zona-neutra-1', label: 'Zona neutra 1', type: 'image', image: '/canchas/ZonaNeutra1.jpg' },
+  { id: 'zona-neutra-2', label: 'Zona neutra 2', type: 'image', image: '/canchas/ZonaNeutra2.jpg' },
+  { id: 'full-color', label: 'Neutral 1(color)', type: 'color', color: '#6ba04d' },
+  { id: 'half-color', label: 'Neutral 2 (color)', type: 'color', color: '#7fb857' },
+  { id: 'goal-area-color', label: 'Neutral 3 (color)', type: 'color', color: '#88c162' }
 ];
 
 export default function TacticalEditor() {
   const t = useTranslations();
   const locale = useLocale();
-  const [fieldColor, setFieldColor] = useState(FIELD_VIEWS[0].color);
+  const [fieldView, setFieldView] = useState<FieldView>(FIELD_VIEWS[0]);
   interface SavedDesign { id: number; title: string; locale?: string; updated_at: string; }
   const [designs, setDesigns] = useState<SavedDesign[]>([]);
   const [loadingDesigns, setLoadingDesigns] = useState(false);
@@ -70,10 +94,7 @@ export default function TacticalEditor() {
   const [title, setTitle] = useState('');
   const [editor, setEditor] = useState<Editor | null>(null);
 
-  const handleViewChange = (id: string) => {
-    const f = FIELD_VIEWS.find(v => v.id === id);
-    if (f) setFieldColor(f.color);
-  };
+  const handleViewChange = (view: FieldView) => setFieldView(view);
 
   const fetchDesigns = useCallback(async () => {
     setLoadingDesigns(true);
@@ -87,6 +108,58 @@ export default function TacticalEditor() {
   }, []);
 
   useEffect(() => { fetchDesigns(); }, [fetchDesigns]);
+
+  // Crear o reemplazar el fondo cuando cambia la vista
+  useEffect(() => {
+    if (!editor) return;
+    
+    const viewport = editor.getViewportPageBounds();
+    
+    // El fondo debe llenar completamente el viewport con aspect ratio 16:10
+    const w = viewport.width;
+    const h = viewport.height;        
+    
+    // Buscar y eliminar cualquier fondo existente
+    const shapes = editor.getCurrentPageShapes();
+    const existingBackgrounds = shapes.filter((s) => s.type === 'field-background');
+    
+    if (existingBackgrounds.length > 0) {
+      editor.deleteShapes(existingBackgrounds.map(s => s.id));
+    }
+    
+    // Crear el nuevo fondo centrado en el viewport
+    editor.createShape({
+      type: 'field-background',
+      x: 0,
+      y: 0,
+      isLocked: true,
+      props: {
+        w,
+        h,
+        backgroundType: fieldView.type,
+        backgroundColor: fieldView.color || '',
+        backgroundImage: fieldView.image || '',
+      },
+    });
+    
+    // Enviar el fondo al final (atrás de todo)
+    // Esperar un momento para que el shape esté completamente creado
+    setTimeout(() => {
+      const allShapes = editor.getCurrentPageShapes();
+      const newBackground = allShapes.find((s) => s.type === 'field-background');
+      
+      if (newBackground) {
+        // Primero mover todos los otros shapes al frente
+        const otherShapes = allShapes.filter((s) => s.type !== 'field-background');
+        if (otherShapes.length > 0) {
+          editor.bringToFront(otherShapes.map(s => s.id));
+        }
+      }
+    }, 50);
+    
+    // Centrar la cámara en el fondo
+    editor.setCamera({ x: 0, y: 0, z: 1 }, { animation: { duration: 300 } });
+  }, [editor, fieldView]);
 
   const saveDesign = async () => {
     if (!title || !editor) return;
@@ -123,6 +196,7 @@ export default function TacticalEditor() {
 
   // Configurar shapes personalizadas
   const customShapeUtils = useMemo(() => [
+    FieldBackgroundShapeUtil,
     GoalkeeperShapeUtil,
     ConeShapeUtil,
     BallShapeUtil,
@@ -139,8 +213,15 @@ export default function TacticalEditor() {
       {/* Sidebar izquierda */}
       <Palette editor={editor} />
       {/* Canvas */}
-      <div className="flex-1 relative">
-        <div className="absolute inset-0" style={{ backgroundColor: fieldColor }}>
+      <div className="flex-1 relative flex items-center justify-center ">
+        <div 
+          className="relative w-full"
+          style={{
+            aspectRatio: '16 / 10',
+            maxHeight: '659px',
+            maxWidth: '1300px',
+          }}
+        >
           <Tldraw
             autoFocus
             persistenceKey="tactical-editor-v1"
@@ -150,9 +231,9 @@ export default function TacticalEditor() {
         </div>
       </div>
       {/* Sidebar derecha */}
-      <RightPanel onChangeView={handleViewChange} editor={editor} />
+      <RightPanel onChangeView={handleViewChange} editor={editor} currentView={fieldView} />
       {/* Panel inferior flotante guardar/cargar */}
-      <div className="absolute left-60 right-60 bottom-20 flex gap-4 px-4 text-black">
+      <div className="absolute left-60 right-60 bottom-0 flex gap-4 px-4 text-black">
         <div className="bg-white shadow rounded px-3 py-2 flex items-center gap-2">
           <input
             value={title}
@@ -172,7 +253,7 @@ export default function TacticalEditor() {
           <p className="text-xs font-semibold mb-2">{t('editor.myDesigns')}</p>
           {loadingDesigns && <p className="text-xs">{t('common.loading')}</p>}
           {!loadingDesigns && designs.length === 0 && (
-            <p className="text-xs text-gray-500">No hay diseños</p>
+            <p className="text-xs text-gray-500">No hay disenos</p>
           )}
           <ul className="space-y-1">
             {designs.map(d => (
@@ -196,15 +277,15 @@ function Palette({ editor }: { editor: Editor | null }) {
 
   const addItem = useCallback((item: PaletteItem) => {
     if (!editor) return;
-    const camera = editor.getCamera();
-    const baseX = camera.x + 100;
-    const baseY = camera.y + 100;
+    // Posicionar elementos en el centro del canvas (0,0) con variación aleatoria
+    const baseX = Math.random() * 200 - (-100); // Entre -100 y 100
+    const baseY = Math.random() * 200 - (-100); // Entre -100 y 100
 
     if (item.type === 'geo' && item.geo) {
       const shape = {
         type: 'geo',
-        x: baseX + Math.random() * 80,
-        y: baseY + Math.random() * 80,
+        x: baseX,
+        y: baseY,
         props: {
           w: item.geo.w,
           h: item.geo.h,
@@ -217,8 +298,8 @@ function Palette({ editor }: { editor: Editor | null }) {
     } else if (item.type === 'text') {
       const shape = {
         type: 'text',
-        x: baseX + Math.random() * 40,
-        y: baseY + Math.random() * 40,
+        x: baseX,
+        y: baseY,
         props: {
           text: item.text || 'Text',
           size: 'm'
@@ -228,8 +309,8 @@ function Palette({ editor }: { editor: Editor | null }) {
     } else if (item.type === 'custom' && item.customType && item.props) {
       const shape = {
         type: item.customType,
-        x: baseX + Math.random() * 60,
-        y: baseY + Math.random() * 60,
+        x: baseX,
+        y: baseY,
         props: item.props
       };
       (editor as unknown as { createShape: (s: typeof shape) => void }).createShape(shape);
@@ -262,11 +343,19 @@ function ExportPanel({ editor }: { editor: Editor | null }) {
   const t = useTranslations();
 
   const exportPNG = async () => {
-    // Usar método interno de tldraw para exportar PNG
     try {
-      const editorAny = editor as unknown as { exportToBlob: (opts: { format: string }) => Promise<Blob | null> };
-      const blob = await editorAny.exportToBlob({ format: 'png' });
-      if (!blob) return;
+      if (!editor) return;
+      const ids = [...editor.getCurrentPageShapeIds()];
+      const pixelRatio = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+
+      // Exportar todo el canvas incluyendo el fondo (que ahora es un shape)
+      const { blob } = await editor.toImage(ids, {
+        format: 'png',
+        background: true,
+        padding: 0,
+        pixelRatio
+      });
+
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = 'entrenamiento.png';
@@ -306,27 +395,39 @@ function ExportPanel({ editor }: { editor: Editor | null }) {
   );
 }
 
-function authHeaders(): Record<string,string> {
+function authHeaders(): Record<string, string> {
   if (typeof window === 'undefined') return {};
   const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-function RightPanel({ onChangeView, editor }: { onChangeView: (id: string) => void; editor: Editor | null }) {
+function RightPanel({ onChangeView, editor, currentView }: { onChangeView: (view: FieldView) => void; editor: Editor | null; currentView: FieldView }) {
   const t = useTranslations();
   const [active, setActive] = useState('views');
   return (
-    <div className="w-60 border-l bg-white flex flex-col text-black">
+    <div className="w-60 bg-white flex flex-col text-black">
       <div className="flex text-xs">
         <button onClick={() => setActive('views')} className={`flex-1 px-2 py-2 border-b ${active==='views' ? 'bg-gray-100 font-semibold' : ''}`}>{t('editor.fieldView')}</button>
         <button onClick={() => setActive('props')} className={`flex-1 px-2 py-2 border-b ${active==='props' ? 'bg-gray-100 font-semibold' : ''}`}>{t('editor.properties')}</button>
       </div>
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="p-3 h-96 overflow-scroll">
         {active === 'views' && (
           <div className="space-y-2">
             {FIELD_VIEWS.map(v => (
-              <button key={v.id} onClick={() => onChangeView(v.id)} className="w-full text-left px-3 py-2 rounded border hover:bg-blue-50 text-sm">
-                {v.label}
+              <button
+                key={v.id}
+                onClick={() => onChangeView(v)}
+                className={`w-full text-left rounded border text-sm overflow-hidden ${v.id === currentView.id ? 'ring-2 ring-blue-500' : ''}`}
+              >
+                <div
+                  className="h-16 w-full"
+                  style={
+                    v.type === 'image'
+                      ? { backgroundImage: `url(${v.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                      : { backgroundColor: v.color || '#6ba04d' }
+                  }
+                />
+                <div className="px-3 py-2">{v.label}</div>
               </button>
             ))}
           </div>
@@ -345,7 +446,7 @@ function ShapeProperties({ editor }: { editor: Editor | null }) {
   const selectionCount = shapes.length;
 
   if (selectionCount === 0) {
-    return <p className="text-xs text-gray-500">No hay selección</p>;
+    return <p className="text-xs text-gray-500">No hay seleccion</p>;
   }
 
   const first = shapes[0] as TLShape;
@@ -410,17 +511,17 @@ function ShapeProperties({ editor }: { editor: Editor | null }) {
           </div>
         )}
         <div className="space-y-1">
-          <p className="text-gray-600">Rotación (°)</p>
+          <p className="text-gray-600">Rotacion (deg)</p>
           <input type="range" min={0} max={360} defaultValue={0} onChange={e => updateRotation(Number(e.target.value))} />
         </div>
         <div className="space-y-1">
           <p className="text-gray-600">Escala</p>
           <input type="range" min={50} max={200} defaultValue={100} onChange={e => updateScale(Number(e.target.value) / 100)} />
         </div>
-        {/* Controles específicos por tipo */}
+        {/* Controles especificos por tipo */}
         {first.type === 'goal' && (
           <div className="space-y-2 mt-2">
-            <p className="text-gray-600 font-semibold">Portería</p>
+            <p className="text-gray-600 font-semibold">Porteria</p>
             <div>
               <p className="text-gray-500 text-[11px]">Color postes</p>
               <div className="flex gap-1 flex-wrap">

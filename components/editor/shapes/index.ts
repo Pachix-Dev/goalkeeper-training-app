@@ -8,6 +8,7 @@ export { HoopShapeUtil, type HoopShape } from './HoopShape';
 export { RebounderShapeUtil, type RebounderShape } from './RebounderShape';
 export { GoalShapeUtil, type GoalShape } from './GoalShape';
 export { HurdleShapeUtil, type HurdleShape } from './HurdleShape';
+export { FieldBackgroundShapeUtil } from './FieldBackgroundShape';
 
 // Re-exportar tipos útiles de tldraw
 import { TLBaseShape } from '@tldraw/tldraw';
