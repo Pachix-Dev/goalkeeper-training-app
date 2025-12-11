@@ -1,49 +1,155 @@
-import { BaseBoxShapeUtil, TLBaseShape, HTMLContainer } from '@tldraw/tldraw';
+import {
+  BaseBoxShapeUtil,
+  HTMLContainer,
+  T,
+  TLBaseShape,
+} from '@tldraw/tldraw';
+import Image from 'next/image';
 
-// Definición del tipo de shape para portero
-export type GoalkeeperShape = TLBaseShape<
+// Define the shape's type
+type GoalkeeperShape = TLBaseShape<
   'goalkeeper',
   {
     w: number;
     h: number;
+    rotation: number;
     color: string;
   }
 >;
 
-// Utilidad para renderizar el shape de portero
+// Helper function to get the goalkeeper image URL based on rotation and uniform color
+function getGoalkeeperImageUrl(rotation: number, color: string): string {
+  const baseUrl = '/portero/posicion_base_de_pie_inicial';
+  
+  // If it's the default color (no color suffix)
+  if (color === 'default') {
+    // If rotation is 0, no rotation suffix
+    if (rotation === 0) {
+      return `${baseUrl}.png`;
+    }
+    // For other rotations, add the rotation number
+    return `${baseUrl}_${rotation}.png`;
+  }
+  
+  // For other colors, include the color and rotation
+  // If rotation is 0, just add the color
+  if (rotation === 0) {
+    return `${baseUrl}_${color}.png`;
+  }
+  
+  // For non-zero rotations with a color
+  return `${baseUrl}_${color}_${rotation}.png`;
+}
+
+// Shape utility class
 export class GoalkeeperShapeUtil extends BaseBoxShapeUtil<GoalkeeperShape> {
   static override type = 'goalkeeper' as const;
+
+  static override props = {
+    w: T.number,
+    h: T.number,
+    rotation: T.number,
+    color: T.string,
+  };
 
   getDefaultProps(): GoalkeeperShape['props'] {
     return {
       w: 40,
       h: 40,
-      color: '#FFA500'
+      rotation: 0,
+      color: 'default',
     };
   }
 
   component(shape: GoalkeeperShape) {
+    const rotation = shape.props.rotation ?? 0;
+    const color = shape.props.color ?? 'default';
+    const imageUrl = getGoalkeeperImageUrl(rotation, color);
+    
     return (
-      <HTMLContainer style={{ width: shape.props.w, height: shape.props.h }}>
-        <svg width="100%" height="100%" viewBox="0 0 40 40">
-          {/* Cuerpo del portero */}
-          <circle cx="20" cy="20" r="18" fill={shape.props.color} stroke="#333" strokeWidth="2"/>
-          {/* Guantes (manos) */}
-          <circle cx="8" cy="18" r="5" fill="#FFF" stroke="#333" strokeWidth="1"/>
-          <circle cx="32" cy="18" r="5" fill="#FFF" stroke="#333" strokeWidth="1"/>
-          {/* Cara */}
-          <circle cx="20" cy="17" r="6" fill="#FFD4A3" stroke="#333" strokeWidth="1"/>
-          {/* Ojos */}
-          <circle cx="17" cy="16" r="1.5" fill="#000"/>
-          <circle cx="23" cy="16" r="1.5" fill="#000"/>
-          {/* Boca */}
-          <path d="M 17 20 Q 20 22 23 20" stroke="#000" fill="none" strokeWidth="1"/>
-        </svg>
+      <HTMLContainer
+        id={shape.id}
+        style={{
+          width: shape.props.w,
+          height: shape.props.h,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'all',
+        }}
+      >
+        <Image
+          src={imageUrl}
+          alt="Goalkeeper"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+          }}
+          width={shape.props.w}
+          height={shape.props.h}
+          draggable={false}
+          onDragStart={(e) => e.preventDefault()}
+        />
       </HTMLContainer>
     );
   }
 
   indicator(shape: GoalkeeperShape) {
-    return <rect width={shape.props.w} height={shape.props.h} />;
+    return (
+      <rect
+        width={shape.props.w}
+        height={shape.props.h}
+        fill="none"
+        stroke="blue"
+        strokeWidth={2}
+      />
+    );
+  }
+
+  override async toSvg(shape: GoalkeeperShape) {
+    const rotation = shape.props.rotation ?? 0;
+    const color = shape.props.color ?? 'default';
+    const imageUrl = getGoalkeeperImageUrl(rotation, color);
+    
+    // Convertir imagen a base64 para exportación
+    const base64Image = await this.imageToBase64(imageUrl);
+    
+    return (
+      <image
+        href={base64Image}
+        x={0}
+        y={0}
+        width={shape.props.w}
+        height={shape.props.h}
+        preserveAspectRatio="xMidYMid meet"
+      />
+    );
+  }
+
+  private async imageToBase64(url: string): Promise<string> {
+    try {
+      // Convertir URL relativa a absoluta
+      const absoluteUrl = typeof window !== 'undefined' 
+        ? `${window.location.origin}${url}`
+        : url;
+
+      // Cargar imagen y convertir a base64
+      const response = await fetch(absoluteUrl);
+      const blob = await response.blob();
+      
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error('Error converting image to base64:', error);
+      // Fallback a URL absoluta si falla la conversión
+      return typeof window !== 'undefined' 
+        ? `${window.location.origin}${url}`
+        : url;
+    }
   }
 }

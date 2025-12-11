@@ -100,7 +100,7 @@ export default function LoginPage() {
                 </span>
               </label>
               <a
-                href="#"
+                href={`/${locale}/forgot-password`}
                 className="text-sm text-blue-600 hover:text-blue-700"
               >
                 {t('auth.forgotPassword')}
@@ -127,7 +127,7 @@ export default function LoginPage() {
             <p className="text-sm text-gray-600">
               {t('auth.noAccount')}{' '}
               <a
-                href="#"
+                href={`/${locale}/register`}
                 className="font-medium text-blue-600 hover:text-blue-700"
               >
                 {t('auth.register')}

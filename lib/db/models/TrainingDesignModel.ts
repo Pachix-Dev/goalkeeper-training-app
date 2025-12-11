@@ -3,7 +3,7 @@ import { CreateTrainingDesignDTO, TrainingDesign, UpdateTrainingDesignDTO } from
 
 export class TrainingDesignModel {
   static async create(userId: number, dto: CreateTrainingDesignDTO): Promise<TrainingDesign> {
-    const result = await query<{ insertId: number }>(
+    const result = await query<any>(
       `INSERT INTO training_designs (user_id, title, locale, data, training_session_id) VALUES (?, ?, ?, ?, ?)`,
       [userId, dto.title, dto.locale || null, JSON.stringify(dto.data), dto.training_session_id ?? null]
     );
@@ -12,22 +12,30 @@ export class TrainingDesignModel {
   }
 
   static async findById(id: number): Promise<TrainingDesign> {
-    const rows = await query<TrainingDesign & { data: string }>(
+    const rows = await query<Array<TrainingDesign & { data: string }>>(
       `SELECT id, user_id, title, locale, data, training_session_id, created_at, updated_at FROM training_designs WHERE id = ?`,
       [id]
     );
-    if (!rows[0]) throw new Error('Design not found');
+    if (!rows || !Array.isArray(rows) || rows.length === 0) {
+      throw new Error('Design not found');
+    }
     const row = rows[0];
-    return { ...row, data: safeParse(row.data) } as TrainingDesign;
+    // El campo data puede venir como string o ya parseado dependiendo del driver
+    const parsedData = typeof row.data === 'string' ? safeParse(row.data) : row.data;
+    return { ...row, data: parsedData } as TrainingDesign;
   }
 
   static async listByUser(userId: number, limit = 50): Promise<TrainingDesign[]> {
-    const rows = await query<(TrainingDesign & { data: string })[]>(
+    const rows = await query<Array<TrainingDesign & { data: string }>>(
       `SELECT id, user_id, title, locale, data, training_session_id, created_at, updated_at
        FROM training_designs WHERE user_id = ? ORDER BY updated_at DESC LIMIT ?`,
       [userId, limit]
     );
-    return rows.map(r => ({ ...r, data: safeParse(r.data) }));
+    if (!rows || !Array.isArray(rows)) return [];
+    return rows.map(r => {
+      const parsedData = typeof r.data === 'string' ? safeParse(r.data) : r.data;
+      return { ...r, data: parsedData };
+    });
   }
 
   static async update(id: number, userId: number, dto: UpdateTrainingDesignDTO): Promise<TrainingDesign> {

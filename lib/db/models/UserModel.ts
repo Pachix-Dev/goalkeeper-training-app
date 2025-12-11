@@ -46,7 +46,7 @@ export class UserModel {
   // Actualizar usuario
   static async update(id: number, data: UpdateUserDTO): Promise<User> {
     const fields: string[] = [];
-    const values: (string | number | undefined)[] = [];
+    const values: (string | number | boolean | undefined)[] = [];
 
     if (data.email) {
       fields.push('email = ?');
@@ -63,6 +63,19 @@ export class UserModel {
     if (data.avatar !== undefined) {
       fields.push('avatar = ?');
       values.push(data.avatar);
+    }
+    if (data.email_verified !== undefined) {
+      fields.push('email_verified = ?');
+      values.push(data.email_verified);
+    }
+    if (data.password) {
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+      fields.push('password_hash = ?');
+      values.push(hashedPassword);
+    }
+
+    if (fields.length === 0) {
+      throw new Error('No fields to update');
     }
 
     values.push(id);

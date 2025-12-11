@@ -18,7 +18,11 @@ export class TeamModel {
       userId
     ]);
     
-    return this.findById(result.insertId);
+    const team = await this.findById(result.insertId);
+    if (!team) {
+      throw new Error('Failed to create team');
+    }
+    return team;
   }
 
   // Buscar por ID
@@ -83,7 +87,11 @@ export class TeamModel {
     const sql = `UPDATE teams SET ${fields.join(', ')} WHERE id = ?`;
     await query(sql, values);
 
-    return this.findById(id);
+    const team = await this.findById(id);
+    if (!team) {
+      throw new Error('Team not found after update');
+    }
+    return team;
   }
 
   // Eliminar equipo (soft delete)

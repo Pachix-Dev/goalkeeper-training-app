@@ -30,7 +30,11 @@ export class GoalkeeperModel {
       data.notes || null
     ]);
     
-    return this.findById(result.insertId);
+    const goalkeeper = await this.findById(result.insertId);
+    if (!goalkeeper) {
+      throw new Error('Failed to create goalkeeper');
+    }
+    return goalkeeper;
   }
 
   // Buscar por ID
@@ -139,7 +143,11 @@ export class GoalkeeperModel {
     const sql = `UPDATE goalkeepers SET ${fields.join(', ')} WHERE id = ?`;
     await query(sql, values);
 
-    return this.findById(id);
+    const goalkeeper = await this.findById(id);
+    if (!goalkeeper) {
+      throw new Error('Goalkeeper not found after update');
+    }
+    return goalkeeper;
   }
 
   // Eliminar portero (soft delete)

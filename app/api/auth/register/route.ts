@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { UserModel } from '@/lib/db/models/UserModel';
+import { VerificationTokenModel } from '@/lib/db/models/VerificationTokenModel';
+import { sendWelcomeEmail } from '@/lib/services/emailService';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,9 +26,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validar longitud de contraseña
-    if (password.length < 6) {
+    if (password.length < 8) {
       return NextResponse.json(
-        { error: 'La contraseña debe tener al menos 6 caracteres' },
+        { error: 'La contraseña debe tener al menos 8 caracteres' },
         { status: 400 }
       );
     }
@@ -48,13 +50,28 @@ export async function POST(request: NextRequest) {
       role: role || 'coach'
     });
 
+    // Generar token de verificación
+    const verificationToken = await VerificationTokenModel.create(
+      user.id,
+      'email_verification',
+      24 // 24 horas para verificar
+    );
+
+    // Enviar email de bienvenida
+    try {
+      await sendWelcomeEmail(user.email, user.name, verificationToken);
+    } catch (emailError) {
+      console.error('Error sending welcome email:', emailError);
+      // No fallar el registro si falla el email
+    }
+
     // Devolver usuario sin password
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password_hash, ...userWithoutPassword } = user;
 
     return NextResponse.json({
       user: userWithoutPassword,
-      message: 'Usuario creado exitosamente'
+      message: 'Usuario registrado exitosamente. Por favor revisa tu email para verificar tu cuenta.'
     }, { status: 201 });
 
   } catch (error) {

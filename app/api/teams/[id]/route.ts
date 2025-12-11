@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TeamModel } from '@/lib/db/models/TeamModel';
 import { AuthUser, authenticateRequest } from '@/lib/auth/middleware';
+import { updateTeamSchema } from '@/lib/validations/team';
+import { ZodError } from 'zod';
 
 // GET /api/teams/[id]
 export async function GET(
@@ -83,9 +85,24 @@ export async function PUT(
       );
     }
 
-    const updatedTeam = await TeamModel.update(teamId, body);
+    // Validar con Zod
+    const validatedData = updateTeamSchema.parse(body);
+
+    // Transform null to undefined for description field
+    const updateData = {
+      ...validatedData,
+      description: validatedData.description ?? undefined
+    };
+
+    const updatedTeam = await TeamModel.update(teamId, updateData);
     return NextResponse.json({ team: updatedTeam });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { error: 'Datos inválidos', issues: error.issues },
+        { status: 400 }
+      );
+    }
     console.error('Error updating team:', error);
     return NextResponse.json(
       { error: 'Error al actualizar equipo' },

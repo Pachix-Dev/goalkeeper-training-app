@@ -27,8 +27,10 @@ export async function authenticateRequest(request: NextRequest): Promise<AuthUse
   }
 }
 
-export function requireAuth(handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>) {
-  return async (request: NextRequest) => {
+export function requireAuth<T = any>(
+  handler: (request: NextRequest, user: AuthUser, context?: T) => Promise<NextResponse>
+) {
+  return async (request: NextRequest, context?: T) => {
     const user = await authenticateRequest(request);
     
     if (!user) {
@@ -38,12 +40,15 @@ export function requireAuth(handler: (request: NextRequest, user: AuthUser) => P
       );
     }
 
-    return handler(request, user);
+    return handler(request, user, context);
   };
 }
 
-export function requireRole(roles: string[], handler: (request: NextRequest, user: AuthUser) => Promise<NextResponse>) {
-  return async (request: NextRequest) => {
+export function requireRole<T = any>(
+  roles: string[], 
+  handler: (request: NextRequest, user: AuthUser, context?: T) => Promise<NextResponse>
+) {
+  return async (request: NextRequest, context?: T) => {
     const user = await authenticateRequest(request);
     
     if (!user) {
@@ -60,6 +65,6 @@ export function requireRole(roles: string[], handler: (request: NextRequest, use
       );
     }
 
-    return handler(request, user);
+    return handler(request, user, context);
   };
 }

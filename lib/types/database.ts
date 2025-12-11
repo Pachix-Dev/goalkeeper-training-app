@@ -224,6 +224,8 @@ export interface UpdateUserDTO {
   name?: string;
   role?: 'admin' | 'coach' | 'assistant';
   avatar?: string;
+  email_verified?: boolean;
+  password?: string;
 }
 
 export interface CreateTeamDTO {

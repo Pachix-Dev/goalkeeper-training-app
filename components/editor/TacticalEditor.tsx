@@ -7,14 +7,7 @@ import '@tldraw/tldraw/tldraw.css';
 import { useTranslations } from 'next-intl';
 import {
   GoalkeeperShapeUtil,
-  ConeShapeUtil,
   BallShapeUtil,
-  DummyShapeUtil,
-  LadderShapeUtil,
-  HoopShapeUtil,
-  RebounderShapeUtil,
-  GoalShapeUtil,
-  HurdleShapeUtil,
   FieldBackgroundShapeUtil
 } from './shapes';
 
@@ -24,11 +17,7 @@ interface PaletteItem {
   labelKey: string;
   type: 'custom' | 'geo' | 'text';
   customType?: string;
-  props?: {
-    w: number;
-    h: number;
-    color: string;
-  };
+  props?: Record<string, string | number>;
   geo?: {
     w: number;
     h: number;
@@ -40,17 +29,9 @@ interface PaletteItem {
 }
 
 const PALETTE: PaletteItem[] = [
-  { id: 'goalkeeper', labelKey: 'Portero', type: 'custom', customType: 'goalkeeper', props: { w: 40, h: 40, color: '#FFA500' } },
-  { id: 'coach', labelKey: 'Entrenador', type: 'geo', geo: { w: 42, h: 42, fill: '#3F51B5', geo: 'circle' } },
-  { id: 'cone', labelKey: 'Cono', type: 'custom', customType: 'cone', props: { w: 24, h: 34, color: '#FF6B00' } },
-  { id: 'ball', labelKey: 'Balon', type: 'custom', customType: 'ball', props: { w: 22, h: 22, color: '#FFFFFF' } },
-  { id: 'ladder', labelKey: 'Escalera', type: 'custom', customType: 'ladder', props: { w: 120, h: 20, color: '#9C27B0' } },
-  { id: 'hoop', labelKey: 'Aro', type: 'custom', customType: 'hoop', props: { w: 46, h: 46, color: '#2196F3' } },
-  { id: 'dummy', labelKey: 'Muneco', type: 'custom', customType: 'dummy', props: { w: 26, h: 60, color: '#FF5722' } },
-  { id: 'rebounder', labelKey: 'Reboteador', type: 'custom', customType: 'rebounder', props: { w: 80, h: 50, color: '#009688' } },
-  { id: 'goal', labelKey: 'Porteria', type: 'custom', customType: 'goal', props: { w: 140, h: 60, color: '#FFFFFF' } },
-  { id: 'hurdle', labelKey: 'Valla', type: 'custom', customType: 'hurdle', props: { w: 80, h: 24, color: '#FFD400' } },
-  { id: 'textNote', labelKey: 'Nota', type: 'text', text: 'Nota' }
+  { id: 'goalkeeper', labelKey: 'Portero', type: 'custom', customType: 'goalkeeper', props: { w: 40, h: 40, rotation: 0, color: 'default' } },
+  { id: 'ball', labelKey: 'Balon', type: 'custom', customType: 'ball', props: { w: 30, h: 30 } },
+  
 ];
 
 type FieldView = {
@@ -73,7 +54,7 @@ const FIELD_VIEWS: FieldView[] = [
   { id: 'lateral-area-grande-4', label: 'Lateral area grande 4', type: 'image', image: '/canchas/LateralAreaGrande4.jpg' },
   { id: 'lateral-area-grande-5', label: 'Lateral area grande 5', type: 'image', image: '/canchas/LateralAreaGrande5.jpg' },
   { id: 'lateral-medio-campo', label: 'Lateral medio campo', type: 'image', image: '/canchas/LateralMedioCampo.jpg' },
-  { id: 'medio-campo-frontal', label: 'Medio campo frontal', type: 'image', image: '/canchas/MedioCampoFrontal.jpg' },
+  { id: 'medio-campo-frontal', label    : 'Medio campo frontal', type: 'image', image: '/canchas/MedioCampoFrontal.jpg' },
   { id: 'trasera-area-grande-1', label: 'Trasera area grande 1', type: 'image', image: '/canchas/TraseraAreaGrande.jpg' },
   { id: 'trasera-area-grande-2', label: 'Trasera area grande 2', type: 'image', image: '/canchas/TraseraAreaGrande2.jpg' },
   { id: 'zona-neutra-1', label: 'Zona neutra 1', type: 'image', image: '/canchas/ZonaNeutra1.jpg' },
@@ -93,6 +74,7 @@ export default function TacticalEditor() {
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState('');
   const [editor, setEditor] = useState<Editor | null>(null);
+  const [preferredcolor, setPreferredcolor] = useState<string>('default');
 
   const handleViewChange = (view: FieldView) => setFieldView(view);
 
@@ -165,11 +147,11 @@ export default function TacticalEditor() {
     if (!title || !editor) return;
     setSaving(true);
     try {
-      const store = editor.store.serialize();
+      const snapshot = editor.getSnapshot();
       const res = await fetch('/api/editor/designs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ title, data: store, locale })
+        body: JSON.stringify({ title, data: snapshot, locale })
       });
       if (res.ok) {
         setTitle('');
@@ -183,9 +165,8 @@ export default function TacticalEditor() {
     const res = await fetch(`/api/editor/designs/${id}`, { headers: authHeaders() });
     if (res.ok) {
       const json = await res.json();
-      const data = json.design.data;
-      editor.store.clear();
-      (editor.store as unknown as { loadSnapshot: (s: unknown) => void }).loadSnapshot(data);
+      const snapshot = json.design.data;
+      editor.loadSnapshot(snapshot);
     }
   };
 
@@ -198,20 +179,17 @@ export default function TacticalEditor() {
   const customShapeUtils = useMemo(() => [
     FieldBackgroundShapeUtil,
     GoalkeeperShapeUtil,
-    ConeShapeUtil,
-    BallShapeUtil,
-    DummyShapeUtil,
-    LadderShapeUtil,
-    HoopShapeUtil,
-    RebounderShapeUtil,
-    GoalShapeUtil,
-    HurdleShapeUtil
+    BallShapeUtil
   ], []);
 
   return (
     <div className="flex h-full">
       {/* Sidebar izquierda */}
-      <Palette editor={editor} />
+      <Palette 
+        editor={editor} 
+        preferredcolor={preferredcolor}
+        setPreferredcolor={setPreferredcolor}
+      />
       {/* Canvas */}
       <div className="flex-1 relative flex items-center justify-center ">
         <div 
@@ -224,14 +202,20 @@ export default function TacticalEditor() {
         >
           <Tldraw
             autoFocus
-            persistenceKey="tactical-editor-v1"
+            persistenceKey="tactical-editor-v3"
             shapeUtils={customShapeUtils}
             onMount={setEditor}
           />
         </div>
       </div>
       {/* Sidebar derecha */}
-      <RightPanel onChangeView={handleViewChange} editor={editor} currentView={fieldView} />
+      <RightPanel 
+        onChangeView={handleViewChange} 
+        editor={editor} 
+        currentView={fieldView}
+        preferredcolor={preferredcolor}
+        setPreferredcolor={setPreferredcolor}
+      />
       {/* Panel inferior flotante guardar/cargar */}
       <div className="absolute left-60 right-60 bottom-0 flex gap-4 px-4 text-black">
         <div className="bg-white shadow rounded px-3 py-2 flex items-center gap-2">
@@ -272,7 +256,15 @@ export default function TacticalEditor() {
   );
 }
 
-function Palette({ editor }: { editor: Editor | null }) {
+function Palette({ 
+  editor, 
+  preferredcolor, 
+  setPreferredcolor 
+}: { 
+  editor: Editor | null;
+  preferredcolor: string;
+  setPreferredcolor: (color: string) => void;
+}) {
   const t = useTranslations();
 
   const addItem = useCallback((item: PaletteItem) => {
@@ -307,15 +299,20 @@ function Palette({ editor }: { editor: Editor | null }) {
       };
       (editor as unknown as { createShape: (s: typeof shape) => void }).createShape(shape);
     } else if (item.type === 'custom' && item.customType && item.props) {
+      // Si es un portero, usar la preferencia de color guardada
+      const props = item.customType === 'goalkeeper' 
+        ? { ...item.props, color: preferredcolor }
+        : item.props;
+      
       const shape = {
         type: item.customType,
         x: baseX,
         y: baseY,
-        props: item.props
+        props
       };
       (editor as unknown as { createShape: (s: typeof shape) => void }).createShape(shape);
     }
-  }, [editor]);
+  }, [editor, preferredcolor]);
 
   return (
     <div className="w-56 border-r bg-white flex flex-col">
@@ -382,7 +379,12 @@ function ExportPanel({ editor }: { editor: Editor | null }) {
 
   const clear = () => {
     if (!editor) return;
-    editor.store.clear();
+    // Borrar todos los shapes excepto el fondo
+    const shapes = editor.getCurrentPageShapes();
+    const shapesToDelete = shapes.filter(s => s.type !== 'field-background');
+    if (shapesToDelete.length > 0) {
+      editor.deleteShapes(shapesToDelete.map(s => s.id));
+    }
   };
 
   return (
@@ -401,7 +403,19 @@ function authHeaders(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-function RightPanel({ onChangeView, editor, currentView }: { onChangeView: (view: FieldView) => void; editor: Editor | null; currentView: FieldView }) {
+function RightPanel({ 
+  onChangeView, 
+  editor, 
+  currentView,
+  preferredcolor,
+  setPreferredcolor
+}: { 
+  onChangeView: (view: FieldView) => void; 
+  editor: Editor | null; 
+  currentView: FieldView;
+  preferredcolor: string;
+  setPreferredcolor: (color: string) => void;
+}) {
   const t = useTranslations();
   const [active, setActive] = useState('views');
   return (
@@ -433,15 +447,41 @@ function RightPanel({ onChangeView, editor, currentView }: { onChangeView: (view
           </div>
         )}
         {active === 'props' && (
-          <ShapeProperties editor={editor} />
+          <ShapeProperties 
+            editor={editor}
+            preferredcolor={preferredcolor}
+            setPreferredcolor={setPreferredcolor}
+          />
         )}
       </div>
     </div>
   );
 }
 
-function ShapeProperties({ editor }: { editor: Editor | null }) {
+function ShapeProperties({ 
+  editor, 
+  preferredcolor, 
+  setPreferredcolor 
+}: { 
+  editor: Editor | null;
+  preferredcolor: string;
+  setPreferredcolor: (color: string) => void;
+}) {
   const t = useTranslations();
+  const [, forceUpdate] = useState({});
+  
+  // Forzar re-render cuando cambia la selección
+  useEffect(() => {
+    if (!editor) return;
+    const handleSelectionChange = () => {
+      forceUpdate({});
+    };
+    editor.on('change', handleSelectionChange);
+    return () => {
+      editor.off('change', handleSelectionChange);
+    };
+  }, [editor]);
+
   const shapes = editor ? editor.getSelectedShapes() : [];
   const selectionCount = shapes.length;
 
@@ -454,11 +494,14 @@ function ShapeProperties({ editor }: { editor: Editor | null }) {
   const updateColor = (color: string) => {
     if (!editor) return;
     shapes.forEach(shape => {
+      // Solo aplicar color a shapes que lo soporten
       if (shape.type === 'geo') {
         editor.updateShape({ ...shape, props: { ...shape.props, fill: color } });
-      } else {
-        editor.updateShape({ ...shape, props: { ...shape.props, color } });
+      } else if (shape.type === 'goalkeeper') {
+        // Los porteros no usan la propiedad 'color', ignoran este cambio
+        return;
       }
+      // Ignorar text, draw y otros shapes nativos de Tldraw
     });
   };
 
@@ -472,134 +515,104 @@ function ShapeProperties({ editor }: { editor: Editor | null }) {
   const updateScale = (scale: number) => {
     if (!editor) return;
     shapes.forEach(shape => {
-      const props = shape.props as unknown as { w?: number; h?: number };
-      const w = props.w ?? 40;
-      const h = props.h ?? 40;
-      editor.updateShape({ ...shape, props: { ...shape.props, w: Math.max(10, w * scale), h: Math.max(10, h * scale) } });
+      // Solo aplicar escala a shapes personalizados que tienen w y h
+      if (shape.type === 'goalkeeper' || shape.type === 'geo') {
+        const props = shape.props as unknown as { w?: number; h?: number };
+        const w = props.w ?? 40;
+        const h = props.h ?? 40;
+        editor.updateShape({ ...shape, props: { ...shape.props, w: Math.max(10, w * scale), h: Math.max(10, h * scale) } });
+      }
+      // Ignorar text, draw y otros shapes nativos que no tienen estas props
     });
   };
 
   const updatePropAll = (prop: string, value: string | number) => {
     if (!editor) return;
     shapes.forEach(shape => {
-      editor.updateShape({ ...shape, props: { ...shape.props, [prop]: value } });
+      editor.updateShape({ 
+        id: shape.id,
+        type: shape.type,
+        props: { ...shape.props, [prop]: value }
+      });
     });
+    // Si es un portero y cambiamos el color de uniforme, guardar la preferencia
+    if (first.type === 'goalkeeper' && prop === 'color' && typeof value === 'string') {
+      setPreferredcolor(value);
+    }
   };
 
   return (
     <div className="space-y-3 text-xs">
       <div>
         <p className="font-semibold mb-1">{t('editor.properties')} ({selectionCount})</p>
-        {first.type === 'geo' && (
-          <div className="space-y-1">
-            <p className="text-gray-600">Color</p>
-            <div className="flex gap-1 flex-wrap">
-              {['#FF6B00','#FFA500','#3F51B5','#2196F3','#FF5722','#009688','#9C27B0','#FFFFFF','#000000'].map(c => (
-                <button key={c} onClick={() => updateColor(c)} style={{ backgroundColor: c }} className="w-6 h-6 rounded border" />
-              ))}
-            </div>
-          </div>
-        )}
-        {first.type !== 'geo' && (
-          <div className="space-y-1">
-            <p className="text-gray-600">Color</p>
-            <div className="flex gap-1 flex-wrap">
-              {['#FF6B00','#FFA500','#3F51B5','#2196F3','#FF5722','#009688','#9C27B0','#FFFFFF','#000000'].map(c => (
-                <button key={c} onClick={() => updateColor(c)} style={{ backgroundColor: c }} className="w-6 h-6 rounded border" />
-              ))}
-            </div>
-          </div>
-        )}
-        <div className="space-y-1">
-          <p className="text-gray-600">Rotacion (deg)</p>
-          <input type="range" min={0} max={360} defaultValue={0} onChange={e => updateRotation(Number(e.target.value))} />
-        </div>
-        <div className="space-y-1">
-          <p className="text-gray-600">Escala</p>
-          <input type="range" min={50} max={200} defaultValue={100} onChange={e => updateScale(Number(e.target.value) / 100)} />
-        </div>
-        {/* Controles especificos por tipo */}
-        {first.type === 'goal' && (
-          <div className="space-y-2 mt-2">
-            <p className="text-gray-600 font-semibold">Porteria</p>
-            <div>
-              <p className="text-gray-500 text-[11px]">Color postes</p>
-              <div className="flex gap-1 flex-wrap">
-                {['#FFFFFF','#FFD400','#FF6B00','#3F51B5','#2196F3','#FF5722','#009688','#9C27B0','#000000'].map(c => (
-                  <button key={c} onClick={() => updatePropAll('postColor', c)} style={{ backgroundColor: c }} className="w-6 h-6 rounded border" />
-                ))}
+        
+        {/* Controles especificos para portero */}
+        {first.type === 'goalkeeper' && (() => {
+          const props = first.props as unknown as { rotation?: number; color?: string };
+          const currentRotation = props.rotation ?? 0;
+          const currentColor = props.color ?? 'default';
+          
+          return (
+            <div className="space-y-2 mt-2">
+              <p className="text-gray-600 font-semibold">Portero</p>
+              <div>
+                <p className="text-gray-500 text-[11px] mb-1">Rotación</p>
+                <div className="grid grid-cols-4 gap-1">
+                  {[0, 1, 2, 3, 4, 5, 6, 7].map(rot => {
+                    const isSelected = currentRotation === rot;
+                    return (
+                      <button
+                        key={rot}
+                        onClick={() => updatePropAll('rotation', rot)}
+                        className={`px-2 py-1 rounded border text-xs transition-colors ${isSelected ? 'bg-blue-500 text-white border-blue-600' : 'bg-white hover:bg-gray-100 border-gray-300'}`}
+                      >
+                        {rot}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div>
+                <p className="text-gray-500 text-[11px] mb-1">Color de uniforme</p>
+                <div className="flex gap-1 flex-wrap">
+                  <button
+                    onClick={() => updatePropAll('color', 'default')}
+                    className={`px-2 py-1 rounded border text-xs transition-colors ${
+                      currentColor === 'default' 
+                        ? 'bg-yellow-500 hover:bg-yellow-600 ring-2 ring-yellow-600' 
+                        : 'bg-yellow-400 hover:bg-yellow-500'
+                    }`}
+                  >
+                    Default
+                  </button>
+                  <button
+                    onClick={() => updatePropAll('color', 'naranja')}
+                    className={`px-2 py-1 rounded border text-xs text-white transition-colors ${
+                      currentColor === 'naranja'
+                        ? 'bg-orange-600 hover:bg-orange-700 ring-2 ring-orange-700'
+                        : 'bg-orange-500 hover:bg-orange-600'
+                    }`}
+                  >
+                    Naranja
+                  </button>
+                </div>
               </div>
             </div>
-            <div>
-              <p className="text-gray-500 text-[11px]">Color red</p>
-              <div className="flex gap-1 flex-wrap">
-                {['#D9D9D9','#FFFFFF','#B0B0B0','#FF6B00','#3F51B5','#2196F3','#009688','#9C27B0','#000000'].map(c => (
-                  <button key={c} onClick={() => updatePropAll('netColor', c)} style={{ backgroundColor: c }} className="w-6 h-6 rounded border" />
-                ))}
-              </div>
-            </div>
-          </div>
+          );
+        })()}
+
+        {/* Controles generales para otros shapes */}
+        {first.type !== 'goalkeeper' && (
+          <>                        
+            {/* Control de rotación para todos excepto text y draw */}            
+              <div className="space-y-1">
+                <p className="text-gray-600">Rotacion (deg)</p>
+                <input type="range" min={0} max={360} defaultValue={0} onChange={e => updateRotation(Number(e.target.value))} />
+              </div>                                                             
+          </>
         )}
-        {first.type === 'hoop' && (
-          <div className="space-y-2 mt-2">
-            <p className="text-gray-600 font-semibold">Aro</p>
-            <div>
-              <p className="text-gray-500 text-[11px]">Grosor del aro</p>
-              <input
-                type="range"
-                min={2}
-                max={14}
-                defaultValue={(() => {
-                  const p = first.props as unknown as { ringWidth?: number };
-                  return p.ringWidth ?? 6;
-                })()}
-                onChange={e => updatePropAll('ringWidth', Number(e.target.value))}
-              />
-            </div>
-            <div>
-              <p className="text-gray-500 text-[11px]">Color aro</p>
-              <div className="flex gap-1 flex-wrap">
-                {['#2196F3','#FF6B00','#FFA500','#3F51B5','#FF5722','#009688','#9C27B0','#FFFFFF','#000000'].map(c => (
-                  <button key={c} onClick={() => updateColor(c)} style={{ backgroundColor: c }} className="w-6 h-6 rounded border" />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-        {first.type === 'rebounder' && (
-          <div className="space-y-2 mt-2">
-            <p className="text-gray-600 font-semibold">Reboteador</p>
-            <div>
-              <p className="text-gray-500 text-[11px]">Color marco</p>
-              <div className="flex gap-1 flex-wrap">
-                {['#009688','#FF6B00','#FFA500','#3F51B5','#2196F3','#FF5722','#9C27B0','#FFFFFF','#000000'].map(c => (
-                  <button key={c} onClick={() => updateColor(c)} style={{ backgroundColor: c }} className="w-6 h-6 rounded border" />
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-gray-500 text-[11px]">Color red</p>
-              <div className="flex gap-1 flex-wrap">
-                {['#CCCCCC','#FFFFFF','#B0B0B0','#FF6B00','#2196F3','#009688','#9C27B0','#000000'].map(c => (
-                  <button key={c} onClick={() => updatePropAll('netColor', c)} style={{ backgroundColor: c }} className="w-6 h-6 rounded border" />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-        {first.type === 'hurdle' && (
-          <div className="space-y-2 mt-2">
-            <p className="text-gray-600 font-semibold">Valla</p>
-            <div>
-              <p className="text-gray-500 text-[11px]">Color</p>
-              <div className="flex gap-1 flex-wrap">
-                {['#FFD400','#FF6B00','#FFA500','#3F51B5','#2196F3','#FF5722','#009688','#9C27B0','#FFFFFF','#000000'].map(c => (
-                  <button key={c} onClick={() => updateColor(c)} style={{ backgroundColor: c }} className="w-6 h-6 rounded border" />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+        
+       
       </div>
     </div>
   );

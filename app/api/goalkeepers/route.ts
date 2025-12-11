@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoalkeeperModel } from '@/lib/db/models/GoalkeeperModel';
 import { TeamModel } from '@/lib/db/models/TeamModel';
 import { requireAuth } from '@/lib/auth/middleware';
+import { createGoalkeeperSchema } from '@/lib/validations/goalkeeper';
+import { ZodError } from 'zod';
 
 // GET /api/goalkeepers - Obtener porteros del usuario
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -28,7 +30,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       goalkeepers = await GoalkeeperModel.findByCoach(user.id);
     }
 
-    return NextResponse.json({ goalkeepers });
+    return NextResponse.json(goalkeepers);
   } catch (error) {
     console.error('Error fetching goalkeepers:', error);
     return NextResponse.json(
@@ -42,19 +44,13 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
     const body = await request.json();
-    const { first_name, last_name, team_id, ...rest } = body;
-
-    // Validar campos requeridos
-    if (!first_name || !last_name) {
-      return NextResponse.json(
-        { error: 'Nombre y apellido son requeridos' },
-        { status: 400 }
-      );
-    }
+    
+    // Validar con Zod
+    const validatedData = createGoalkeeperSchema.parse(body);
 
     // Si se especifica un equipo, verificar que pertenece al usuario
-    if (team_id) {
-      const team = await TeamModel.findById(team_id);
+    if (validatedData.team_id) {
+      const team = await TeamModel.findById(validatedData.team_id);
       if (!team || team.user_id !== user.id) {
         return NextResponse.json(
           { error: 'Equipo no válido' },
@@ -63,15 +59,16 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
       }
     }
 
-    const goalkeeper = await GoalkeeperModel.create({
-      first_name,
-      last_name,
-      team_id,
-      ...rest
-    });
+    const goalkeeper = await GoalkeeperModel.create(validatedData);
 
     return NextResponse.json({ goalkeeper }, { status: 201 });
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { error: 'Datos inválidos', issues: error.issues },
+        { status: 400 }
+      );
+    }
     console.error('Error creating goalkeeper:', error);
     return NextResponse.json(
       { error: 'Error al crear portero' },

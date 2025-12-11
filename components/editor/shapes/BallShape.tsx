@@ -1,48 +1,126 @@
-import { BaseBoxShapeUtil, TLBaseShape, HTMLContainer } from '@tldraw/tldraw';
+import {
+  BaseBoxShapeUtil,
+  HTMLContainer,
+  T,
+  TLBaseShape,
+} from '@tldraw/tldraw';
+import Image from 'next/image';
 
-export type BallShape = TLBaseShape<
+// Define the shape's type
+type BallShape = TLBaseShape<
   'ball',
   {
     w: number;
     h: number;
-    color: string;
   }
 >;
 
+// Helper function to get the ball image URL
+function getBallImageUrl(): string {
+  return '/balones/balon_futbol_incial.png';
+}
+
+// Shape utility class
 export class BallShapeUtil extends BaseBoxShapeUtil<BallShape> {
   static override type = 'ball' as const;
 
+  static override props = {
+    w: T.number,
+    h: T.number,
+  };
+
   getDefaultProps(): BallShape['props'] {
     return {
-      w: 22,
-      h: 22,
-      color: '#FFFFFF'
+      w: 30,
+      h: 30,
     };
   }
 
   component(shape: BallShape) {
+    const imageUrl = getBallImageUrl();
+    
     return (
-      <HTMLContainer style={{ width: shape.props.w, height: shape.props.h }}>
-        <svg width="100%" height="100%" viewBox="0 0 22 22">
-          {/* Balón base */}
-          <circle cx="11" cy="11" r="10" fill={shape.props.color} stroke="#333" strokeWidth="1.5"/>
-          {/* Patrón de pentágonos típico */}
-          <path 
-            d="M 11 4 L 8 7 L 9 10 L 13 10 L 14 7 Z" 
-            fill="none" 
-            stroke="#333" 
-            strokeWidth="1"
-          />
-          <path d="M 5 9 L 7 8 L 8 11 L 6 13 Z" fill="none" stroke="#333" strokeWidth="1"/>
-          <path d="M 17 9 L 15 8 L 14 11 L 16 13 Z" fill="none" stroke="#333" strokeWidth="1"/>
-          <path d="M 11 15 L 9 13 L 8 16 L 11 18 Z" fill="none" stroke="#333" strokeWidth="1"/>
-          <path d="M 11 15 L 13 13 L 14 16 L 11 18 Z" fill="none" stroke="#333" strokeWidth="1"/>
-        </svg>
+      <HTMLContainer
+        id={shape.id}
+        style={{
+          width: shape.props.w,
+          height: shape.props.h,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'all',
+        }}
+      >
+        <Image
+          src={imageUrl}
+          alt="Ball"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+          }}
+          width={shape.props.w}
+          height={shape.props.h}
+          draggable={false}
+          onDragStart={(e) => e.preventDefault()}
+        />
       </HTMLContainer>
     );
   }
 
   indicator(shape: BallShape) {
-    return <rect width={shape.props.w} height={shape.props.h} />;
+    return (
+      <rect
+        width={shape.props.w}
+        height={shape.props.h}
+        fill="none"
+        stroke="blue"
+        strokeWidth={2}
+      />
+    );
+  }
+
+  override async toSvg(shape: BallShape) {
+    const imageUrl = getBallImageUrl();
+    
+    // Convertir imagen a base64 para exportación
+    const base64Image = await this.imageToBase64(imageUrl);
+    
+    return (
+      <image
+        href={base64Image}
+        x={0}
+        y={0}
+        width={shape.props.w}
+        height={shape.props.h}
+        preserveAspectRatio="xMidYMid meet"
+      />
+    );
+  }
+
+  private async imageToBase64(url: string): Promise<string> {
+    try {
+      // Convertir URL relativa a absoluta
+      const absoluteUrl = typeof window !== 'undefined' 
+        ? `${window.location.origin}${url}`
+        : url;
+
+      // Cargar imagen y convertir a base64
+      const response = await fetch(absoluteUrl);
+      const blob = await response.blob();
+      
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error('Error converting image to base64:', error);
+      // Fallback a URL absoluta si falla la conversión
+      return typeof window !== 'undefined' 
+        ? `${window.location.origin}${url}`
+        : url;
+    }
   }
 }
