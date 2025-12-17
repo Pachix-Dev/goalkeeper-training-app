@@ -39,8 +39,8 @@ export class FieldBackgroundShapeUtil extends BaseBoxShapeUtil<FieldBackgroundSh
 
   getDefaultProps(): FieldBackgroundShape['props'] {
     return {
-      w: 1200,
-      h: 800,
+      w: 1300,
+      h: 659,
       backgroundType: 'color',
       backgroundColor: '#6ba04d',
       backgroundImage: '',
@@ -71,8 +71,8 @@ export class FieldBackgroundShapeUtil extends BaseBoxShapeUtil<FieldBackgroundSh
       >
         <div
           style={{
-            width: '100%',
-            height: '100%',
+            width: '1300px',
+            height: '659px',
             backgroundColor: backgroundColor && backgroundColor !== '' ? backgroundColor : '#6ba04d',
             backgroundImage: backgroundType === 'image' && backgroundImage && backgroundImage !== '' ? `url(${backgroundImage})` : 'none',
             backgroundSize: 'contain',
@@ -88,5 +88,52 @@ export class FieldBackgroundShapeUtil extends BaseBoxShapeUtil<FieldBackgroundSh
 
   indicator(shape: FieldBackgroundShape) {
     return <rect width={shape.props.w} height={shape.props.h} />;
+  }
+
+  override async toSvg(shape: FieldBackgroundShape) {
+    const { w, h, backgroundType, backgroundColor, backgroundImage } = shape.props;
+    const fillColor = backgroundColor && backgroundColor !== '' ? backgroundColor : '#6ba04d';
+
+    if (backgroundType === 'image' && backgroundImage) {
+      const base64Image = await this.imageToBase64(backgroundImage);
+      return (
+        <>
+          <rect width={w} height={h} fill={fillColor} />
+          <image
+            href={base64Image}
+            x={0}
+            y={0}
+            width={w}
+            height={h}
+            preserveAspectRatio="xMidYMid slice"
+          />
+        </>
+      );
+    }
+
+    return <rect width={w} height={h} fill={fillColor} />;
+  }
+
+  private async imageToBase64(url: string): Promise<string> {
+    try {
+      const absoluteUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}${url}`
+        : url;
+
+      const response = await fetch(absoluteUrl);
+      const blob = await response.blob();
+
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error('Error converting background image to base64:', error);
+      return typeof window !== 'undefined'
+        ? `${window.location.origin}${url}`
+        : url;
+    }
   }
 }

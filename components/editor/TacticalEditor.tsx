@@ -42,6 +42,9 @@ type FieldView = {
   image?: string;
 };
 
+const FIELD_IMAGE_WIDTH = 1300;
+const FIELD_IMAGE_HEIGHT = 659;
+
 // Vistas de cancha con imagenes en /public/canchas
 const FIELD_VIEWS: FieldView[] = [
   { id: 'corner-1', label: 'Corner 1', type: 'image', image: '/canchas/Corner1.jpg' },
@@ -128,7 +131,7 @@ export default function TacticalEditor({ mode, designId, onDesignSaved }: Tactic
     
     const viewport = editor.getViewportPageBounds();
     
-    // El fondo debe llenar completamente el viewport con aspect ratio 16:10
+    // El fondo debe llenar completamente el viewport con la misma proporcion de las imagenes
     const w = viewport.width;
     const h = viewport.height;        
     
@@ -266,7 +269,7 @@ export default function TacticalEditor({ mode, designId, onDesignSaved }: Tactic
         <div 
           className="relative w-full"
           style={{
-            aspectRatio: '16 / 10',
+            aspectRatio: `${FIELD_IMAGE_WIDTH} / ${FIELD_IMAGE_HEIGHT}`,
             maxHeight: '659px',
             maxWidth: '1300px',
           }}

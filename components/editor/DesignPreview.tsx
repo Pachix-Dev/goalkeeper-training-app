@@ -68,8 +68,8 @@ export default function DesignPreview({ designId, className = '' }: DesignPrevie
       src={`/api/designs/${design.img}`}
       alt={design.title || 'Diagrama táctico'}
       className={`relative ${className} border-2 border-black/70`}
-      width={600}                      
-      height={400}
+      width={1623}                      
+      height={1014}
     />    
   );
 }
