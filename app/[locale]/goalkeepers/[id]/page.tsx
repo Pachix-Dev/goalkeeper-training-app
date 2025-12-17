@@ -121,7 +121,7 @@ export default function GoalkeeperDetailPage() {
                 )}
               </div>
               <Link href={`/${locale}/goalkeepers/${goalkeeper.id}/edit`}>
-                <Button variant="primary" className="bg-white text-blue-600 hover:bg-gray-100">
+                <Button variant="primary" className="bg-slate-950 hover:bg-slate-800 cursor-pointer">
                   {tc('edit')}
                 </Button>
               </Link>
@@ -192,7 +192,7 @@ export default function GoalkeeperDetailPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Historial de Asistencia</h2>
                 <Link href={`/${locale}/goalkeepers/${goalkeeper.id}/attendance`}>
-                  <Button variant="outline" className="text-sm">Ver Todo</Button>
+                  <Button variant="outline" className="text-sm cursor-pointer">Ver Todo</Button>
                 </Link>
               </div>
               <p className="text-sm text-gray-500">Accede al historial completo de asistencia del portero</p>
@@ -203,7 +203,7 @@ export default function GoalkeeperDetailPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Penaltis</h2>
                 <Link href={`/${locale}/penalties?goalkeeper_id=${goalkeeper.id}`}>
-                  <Button variant="outline" className="text-sm">Ver Todos</Button>
+                  <Button variant="outline" className="text-sm cursor-pointer">Ver Todos</Button>
                 </Link>
               </div>
               <p className="text-sm text-gray-500">Registro y análisis de penaltis del portero</p>
@@ -214,7 +214,7 @@ export default function GoalkeeperDetailPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">Análisis de Partidos</h2>
                 <Link href={`/${locale}/matches?goalkeeper_id=${goalkeeper.id}`}>
-                  <Button variant="outline" className="text-sm">Ver Todos</Button>
+                  <Button variant="outline" className="text-sm cursor-pointer">Ver Todos</Button>
                 </Link>
               </div>
               <p className="text-sm text-gray-500">Registro de rendimiento y análisis post-partido</p>
@@ -225,7 +225,7 @@ export default function GoalkeeperDetailPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">📊 Estadísticas por Temporada</h2>
                 <Link href={`/${locale}/statistics?goalkeeper_id=${goalkeeper.id}`}>
-                  <Button variant="outline" className="text-sm">Ver Todas</Button>
+                  <Button variant="outline" className="text-sm cursor-pointer">Ver Todas</Button>
                 </Link>
               </div>
               <p className="text-sm text-gray-500">Estadísticas detalladas de rendimiento por temporada</p>

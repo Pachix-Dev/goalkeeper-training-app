@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { GoalkeeperStatistics } from '@/lib/db/models/GoalkeeperStatisticsModel';
 import StatsGrid from '@/components/statistics/StatsGrid';
+import { apiGet, apiDelete } from '@/lib/utils/api';
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -23,10 +24,7 @@ export default function StatisticsDetailPage({ params }: PageProps) {
   useEffect(() => {
     const loadStatistics = async () => {
       try {
-        const response = await fetch(`/api/statistics/${resolvedParams.id}`);
-        if (!response.ok) throw new Error('Error al cargar estadísticas');
-        
-        const data = await response.json();
+        const data = await apiGet<GoalkeeperStatistics>(`/api/statistics/${resolvedParams.id}`);
         setStatistics(data);
       } catch (error) {
         console.error('Error:', error);
@@ -42,12 +40,7 @@ export default function StatisticsDetailPage({ params }: PageProps) {
     if (!confirm('¿Estás seguro de eliminar estas estadísticas?')) return;
 
     try {
-      const response = await fetch(`/api/statistics/${resolvedParams.id}`, {
-        method: 'DELETE'
-      });
-
-      if (!response.ok) throw new Error('Error al eliminar');
-
+      await apiDelete(`/api/statistics/${resolvedParams.id}`);
       router.push(`/${resolvedParams.locale}/statistics`);
     } catch (error) {
       console.error('Error:', error);
@@ -140,7 +133,9 @@ export default function StatisticsDetailPage({ params }: PageProps) {
               <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                 <span className="text-gray-700">{t('calculated.penaltySavePercentage')}</span>
                 <span className="font-bold text-lg text-blue-700">
-                  {statistics.penalty_save_percentage.toFixed(1)}%
+                  {typeof statistics.penalty_save_percentage === 'number'
+                    ? statistics.penalty_save_percentage.toFixed(1)
+                    : parseFloat(statistics.penalty_save_percentage || '0').toFixed(1)}%
                 </span>
               </div>
             )}

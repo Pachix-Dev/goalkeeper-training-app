@@ -60,6 +60,7 @@ export interface Task {
   instructions?: string;
   video_url?: string;
   image_url?: string;
+  design_id?: number | null;
   user_id: number;
   is_public: boolean;
   created_at: Date;
@@ -190,6 +191,7 @@ export interface TrainingDesign {
   title: string;
   locale?: string;
   data: any; // Serialized tldraw store JSON
+  img?: string | null; // Nombre del archivo PNG generado (UUID.png)
   training_session_id?: number | null;
   created_at: Date;
   updated_at: Date;
@@ -198,6 +200,7 @@ export interface TrainingDesign {
 export interface CreateTrainingDesignDTO {
   title: string;
   data: any;
+  img?: string;
   locale?: string;
   training_session_id?: number | null;
 }
@@ -205,6 +208,7 @@ export interface CreateTrainingDesignDTO {
 export interface UpdateTrainingDesignDTO {
   title?: string;
   data?: any;
+  img?: string;
   training_session_id?: number | null;
 }
 
@@ -248,29 +252,29 @@ export interface UpdateTeamDTO {
 export interface CreateGoalkeeperDTO {
   first_name: string;
   last_name: string;
-  date_of_birth?: Date;
-  height?: number;
-  weight?: number;
-  nationality?: string;
-  photo?: string;
-  dominant_hand?: 'left' | 'right' | 'both';
-  team_id?: number;
-  jersey_number?: number;
-  notes?: string;
+  date_of_birth?: string | Date | null;
+  height?: number | null;
+  weight?: number | null;
+  nationality?: string | null;
+  photo?: string | null;
+  dominant_hand?: 'left' | 'right' | 'both' | null;
+  team_id?: number | null;
+  jersey_number?: number | null;
+  notes?: string | null;
 }
 
 export interface UpdateGoalkeeperDTO {
   first_name?: string;
   last_name?: string;
-  date_of_birth?: Date;
-  height?: number;
-  weight?: number;
-  nationality?: string;
-  photo?: string;
-  dominant_hand?: 'left' | 'right' | 'both';
-  team_id?: number;
-  jersey_number?: number;
-  notes?: string;
+  date_of_birth?: string | Date | null;
+  height?: number | null;
+  weight?: number | null;
+  nationality?: string | null;
+  photo?: string | null;
+  dominant_hand?: 'left' | 'right' | 'both' | null;
+  team_id?: number | null;
+  jersey_number?: number | null;
+  notes?: string | null;
   is_active?: boolean;
 }
 

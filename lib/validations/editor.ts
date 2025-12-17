@@ -4,6 +4,7 @@ import { z } from 'zod';
 export const createDesignSchema = z.object({
   title: z.string().min(1).max(200),
   data: z.record(z.string(), z.unknown()), // tldraw store serializado
+  img: z.string().max(255).optional(),
   locale: z.string().optional(),
   training_session_id: z.number().int().positive().optional()
 });
@@ -12,6 +13,7 @@ export const createDesignSchema = z.object({
 export const updateDesignSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   data: z.record(z.string(), z.unknown()).optional(),
+  img: z.string().max(255).optional(),
   training_session_id: z.number().int().positive().nullable().optional()
 });
 

@@ -43,19 +43,25 @@ export default function StatsGrid({ statistics }: StatsGridProps) {
     },
     {
       label: t('calculated.goalsPerMatch'),
-      value: statistics.goals_per_match?.toFixed(2) || '0.00',
+      value: typeof statistics.goals_per_match === 'number' 
+        ? statistics.goals_per_match.toFixed(2) 
+        : parseFloat(statistics.goals_per_match || '0').toFixed(2),
       icon: '📊',
       color: 'yellow' as const
     },
     {
       label: t('calculated.cleanSheetPercentage'),
-      value: `${statistics.clean_sheet_percentage?.toFixed(1) || 0}%`,
+      value: typeof statistics.clean_sheet_percentage === 'number'
+        ? `${statistics.clean_sheet_percentage.toFixed(1)}%`
+        : `${parseFloat(statistics.clean_sheet_percentage || '0').toFixed(1)}%`,
       icon: '💯',
       color: 'green' as const
     },
     {
       label: t('calculated.savePercentage'),
-      value: `${statistics.save_percentage?.toFixed(1) || 0}%`,
+      value: typeof statistics.save_percentage === 'number'
+        ? `${statistics.save_percentage.toFixed(1)}%`
+        : `${parseFloat(statistics.save_percentage || '0').toFixed(1)}%`,
       icon: '🎯',
       color: 'blue' as const
     }

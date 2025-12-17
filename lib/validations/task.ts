@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+const TASK_CATEGORIES = [
+  'technical',
+  'tactical',
+  'physical',
+  'psychological',
+  'goalkeeper_specific'
+] as const;
+
+const TASK_DIFFICULTIES = ['beginner', 'intermediate', 'advanced'] as const;
+
 // Schema para crear tarea
 export const createTaskSchema = z.object({
   title: z.string()
@@ -11,8 +21,8 @@ export const createTaskSchema = z.object({
     .optional()
     .nullable(),
   
-  category: z.enum(['technical', 'tactical', 'physical', 'psychological', 'goalkeeper_specific'], {
-    errorMap: () => ({ message: 'Categoría inválida' })
+  category: z.enum(TASK_CATEGORIES, {
+    message: 'Categoria invalida'
   }),
   
   subcategory: z.string()
@@ -27,7 +37,7 @@ export const createTaskSchema = z.object({
     .optional()
     .nullable(),
   
-  difficulty: z.enum(['beginner', 'intermediate', 'advanced'])
+  difficulty: z.enum(TASK_DIFFICULTIES)
     .default('intermediate')
     .optional(),
   
@@ -46,15 +56,17 @@ export const createTaskSchema = z.object({
     .optional()
     .nullable(),
   
-  video_url: z.string()
-    .url('URL de video inválida')
-    .max(500, 'La URL del video es demasiado larga')
+  video_url: z.union([z.string().url('URL de video inválida').max(500), z.literal('')])
     .optional()
     .nullable(),
   
-  image_url: z.string()
-    .url('URL de imagen inválida')
-    .max(500, 'La URL de la imagen es demasiado larga')
+  image_url: z.union([z.string().url('URL de imagen inválida').max(500), z.literal('')])
+    .optional()
+    .nullable(),
+  
+  design_id: z.number()
+    .int('El ID del diseño debe ser un número entero')
+    .positive('El ID del diseño debe ser positivo')
     .optional()
     .nullable(),
   
@@ -75,8 +87,8 @@ export const updateTaskSchema = z.object({
     .optional()
     .nullable(),
   
-  category: z.enum(['technical', 'tactical', 'physical', 'psychological', 'goalkeeper_specific'], {
-    errorMap: () => ({ message: 'Categoría inválida' })
+  category: z.enum(TASK_CATEGORIES, {
+    message: 'Categoria invalida'
   }).optional(),
   
   subcategory: z.string()
@@ -91,7 +103,7 @@ export const updateTaskSchema = z.object({
     .optional()
     .nullable(),
   
-  difficulty: z.enum(['beginner', 'intermediate', 'advanced'])
+  difficulty: z.enum(TASK_DIFFICULTIES)
     .optional(),
   
   objectives: z.string()
@@ -109,15 +121,17 @@ export const updateTaskSchema = z.object({
     .optional()
     .nullable(),
   
-  video_url: z.string()
-    .url('URL de video inválida')
-    .max(500, 'La URL del video es demasiado larga')
+  video_url: z.union([z.string().url('URL de video inválida').max(500), z.literal('')])
     .optional()
     .nullable(),
   
-  image_url: z.string()
-    .url('URL de imagen inválida')
-    .max(500, 'La URL de la imagen es demasiado larga')
+  image_url: z.union([z.string().url('URL de imagen inválida').max(500), z.literal('')])
+    .optional()
+    .nullable(),
+  
+  design_id: z.number()
+    .int('El ID del diseño debe ser un número entero')
+    .positive('El ID del diseño debe ser positivo')
     .optional()
     .nullable(),
   

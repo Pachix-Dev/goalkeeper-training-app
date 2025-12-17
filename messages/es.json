@@ -64,8 +64,10 @@
   },
   "common": {
     "save": "Guardar",
+    "saving": "Guardando...",
     "cancel": "Cancelar",
     "delete": "Eliminar",
+    "deleting": "Eliminando...",
     "edit": "Editar",
     "create": "Crear",
     "search": "Buscar",
@@ -83,7 +85,14 @@
     "active": "Activo",
     "inactive": "Inactivo",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "limit": "Límite",
+    "goalkeeper": "Portero",
+    "team": "Equipo",
+    "noDate": "Sin fecha",
+    "information": "Información",
+    "details": "Detalles",
+    "select": "Seleccionar"
   },
   "teams": {
     "title": "Equipos",
@@ -264,7 +273,19 @@
     "basicInfo": "Información Básica",
     "taskSetup": "Configuración de la Tarea",
     "additionalResources": "Recursos Adicionales",
-    "editTaskSubtitle": "Actualiza la información de la tarea"
+    "editTaskSubtitle": "Actualiza la información de la tarea",
+    "drawExercise": "Dibujar Ejercicio",
+    "drawExerciseDescription": "Crear diagrama táctico del ejercicio",
+    "viewDiagram": "Ver Diagrama",
+    "editDiagram": "Editar Diagrama",
+    "noDiagram": "Sin diagrama",
+    "diagramLinked": "Diagrama vinculado exitosamente",
+    "removeDiagram": "Quitar diagrama",
+    "diagramSection": "Diagrama Táctico",
+    "viewFullscreen": "Ver en pantalla completa",
+    "print": "Imprimir",
+    "diagram": "Diagrama",
+    "hasDiagram": "Esta tarea tiene diagrama táctico"
   },
   "sessions": {
     "title": "Sesiones de Entrenamiento",
@@ -350,7 +371,9 @@
     "filterByType": "Filtrar por tipo",
     "allTeams": "Todos los equipos",
     "allTypes": "Todos los tipos",
-    "allStatuses": "Todos los estados"
+    "allStatuses": "Todos los estados",
+    "tacticalDiagrams": "Diagramas Tácticos",
+    "print": "Imprimir"
   },
   "attendance": {
     "title": "Asistencia",
@@ -585,7 +608,25 @@
       "goalkeeperRequired": "Selecciona un portero",
       "invalidDate": "Fecha inválida",
       "invalidUrl": "URL inválida"
-    }
+    },
+    "errors": {
+      "failedToUpdate": "Error al actualizar el penalti",
+      "notFound": "Penalti no encontrado"
+    },
+    "selectGoalkeeper": "Selecciona un portero",
+    "opponentName": "Nombre del oponente",
+    "selectFoot": "Selecciona el pie",
+    "leftFoot": "Pie izquierdo",
+    "rightFoot": "Pie derecho",
+    "saved": "Atajado",
+    "goal": "Gol",
+    "missed": "Fallado",
+    "post": "Al poste",
+    "selectDirection": "Selecciona dirección",
+    "left": "Izquierda",
+    "center": "Centro",
+    "right": "Derecha",
+    "notesPlaceholder": "Agrega notas u observaciones sobre el penalti..."
   },
   "matches": {
     "title": "Análisis de Partidos",
@@ -609,6 +650,7 @@
     "rating": "Valoración",
     "strengths": "Fortalezas",
     "areasForImprovement": "Áreas de mejora",
+    "notes": "Notas",
     "videoUrl": "URL del video",
     "deleteMatch": "Eliminar Análisis",
     "confirmDelete": "¿Eliminar este análisis?",
@@ -718,7 +760,9 @@
       "minGoalkeepers": "Selecciona al menos 2 porteros",
       "maxGoalkeepers": "Máximo 5 porteros",
       "compare": "Comparar",
-      "noData": "Sin datos para comparar"
+      "noData": "Sin datos para comparar",
+      "selectAtLeastTwo": "Debes seleccionar al menos 2 porteros",
+      "selected": "seleccionados"
     },
     "topPerformers": {
       "title": "Mejores Porteros",

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { GoalkeeperStatistics } from '@/lib/db/models/GoalkeeperStatisticsModel';
 import StatsGrid from '@/components/statistics/StatsGrid';
+import { apiGet } from '@/lib/utils/api';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -32,14 +33,12 @@ export default function StatisticsPage({ params }: PageProps) {
       setLoading(true);
 
       // Cargar porteros
-      const gkResponse = await fetch('/api/goalkeepers');
-      const gkData = await gkResponse.json();
+      const gkData = await apiGet<Goalkeeper[] | { goalkeepers: Goalkeeper[] }>('/api/goalkeepers');
       const goalkeeperArray = Array.isArray(gkData) ? gkData : gkData.goalkeepers || [];
       setGoalkeepers(goalkeeperArray);
 
       // Cargar temporadas
-      const seasonsResponse = await fetch('/api/statistics?action=seasons');
-      const seasonsData = await seasonsResponse.json();
+      const seasonsData = await apiGet<string[]>('/api/statistics?action=seasons');
       setSeasons(Array.isArray(seasonsData) ? seasonsData : []);
 
       // Si hay temporada seleccionada, usar esa; sino, la más reciente
@@ -58,8 +57,7 @@ export default function StatisticsPage({ params }: PageProps) {
       }
 
       if (url !== '/api/statistics?') {
-        const statsResponse = await fetch(url);
-        const statsData = await statsResponse.json();
+        const statsData = await apiGet<GoalkeeperStatistics[]>(url);
         setStatistics(Array.isArray(statsData) ? statsData : []);
       }
     } catch (error) {

@@ -25,6 +25,8 @@ interface DashboardStats {
     session_type: string;
     session_date: string;
     start_time: string;
+    end_time: string | null;
+    status: string;
   }>;
   recentMatches: Array<{
     id: number;
@@ -32,7 +34,7 @@ interface DashboardStats {
     opponent: string;
     match_date: string;
     result: string;
-    overall_rating: number;
+    rating: number | null;
   }>;
   topGoalkeepers: Array<{
     goalkeeper_name: string;

@@ -84,7 +84,9 @@ export default function RecentActivity({ recentMatches, locale }: RecentActivity
                     <>
                       <span className="text-gray-400">•</span>
                       <span className={`px-2 py-0.5 rounded text-xs font-medium ${getRatingColor(match.rating)}`}>
-                        ⭐ {match.rating.toFixed(1)}
+                        ⭐ {typeof match.rating === 'number' 
+                          ? match.rating.toFixed(1) 
+                          : parseFloat(match.rating).toFixed(1)}
                       </span>
                     </>
                   )}

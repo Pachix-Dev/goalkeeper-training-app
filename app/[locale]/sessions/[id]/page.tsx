@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { SessionTaskItem } from '@/components/sessions/SessionTaskItem';
+import { DiagramGallery } from '@/components/sessions/DiagramGallery';
 import { apiGet, apiDelete, apiPost } from '@/lib/utils/api';
 
 interface Session {
@@ -33,6 +34,8 @@ interface SessionTask {
   task_title?: string;
   task_category?: string;
   task_difficulty?: string;
+  design_id?: number | null;
+  design_img?: string | null;
 }
 
 interface Task {
@@ -117,11 +120,15 @@ export default function SessionDetailPage() {
       await apiDelete(`/api/sessions/${sessionId}/tasks/${taskId}`);
       loadData();
     } catch (error) {
-      console.error(t('errorDeletingTask'), error);
-      alert(t('errorDeletingTask'));
+      console.error(t('errorDeletingTask'), error);    
+    alert(t('errorDeletingTask'));
     }
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+  
   if (loading || !session) {
     return <div className="min-h-screen bg-gray-50 py-8"><div className="max-w-4xl mx-auto px-4"><p className="text-center text-gray-600">Cargando...</p></div></div>;
   }
@@ -144,13 +151,35 @@ export default function SessionDetailPage() {
             <p className="text-gray-600 mt-2">{formatDate(session.session_date)}</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => router.push(`/${locale}/sessions/${sessionId}/attendance`)}>
+            <Button 
+              variant="outline" 
+              onClick={handlePrint}
+              className="print:hidden"
+            >
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+              </svg>
+              {t('print')}
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => router.push(`/${locale}/sessions/${sessionId}/attendance`)}
+              className="print:hidden"
+            >
               📋 Asistencia
             </Button>
-            <Button variant="outline" onClick={() => router.push(`/${locale}/sessions/${sessionId}/edit`)}>
+            <Button 
+              variant="outline" 
+              onClick={() => router.push(`/${locale}/sessions/${sessionId}/edit`)}
+              className="print:hidden"
+            >
               {t('editSession')}
             </Button>
-            <Button variant="outline" onClick={handleDelete} className="text-red-600 hover:bg-red-50">
+            <Button 
+              variant="outline" 
+              onClick={handleDelete} 
+              className="text-red-600 hover:bg-red-50 print:hidden"
+            >
               {t('deleteSession')}
             </Button>
           </div>
@@ -191,10 +220,13 @@ export default function SessionDetailPage() {
           )}
         </Card>
 
+        {/* Galería de diagramas tácticos */}
+        <DiagramGallery tasks={sessionTasks} />
+
         <Card>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">{t('tasks')}</h2>
-            <Button onClick={() => setShowAddTask(true)}>+ {t('addTask')}</Button>
+            <Button onClick={() => setShowAddTask(true)} className="print:hidden">+ {t('addTask')}</Button>
           </div>
 
           {showAddTask && (

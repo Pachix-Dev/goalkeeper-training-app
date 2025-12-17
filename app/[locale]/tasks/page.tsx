@@ -16,6 +16,7 @@ interface Task {
   subcategory: string | null;
   duration: number | null;
   difficulty: string | null;
+  design_id?: number | null;
   is_public: boolean;
   user_id: number;
 }

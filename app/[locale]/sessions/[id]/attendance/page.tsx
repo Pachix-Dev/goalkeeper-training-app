@@ -64,7 +64,8 @@ export default function SessionAttendancePage() {
 
       // Obtener porteros del equipo
       const goalkeeperData = await apiGet<Goalkeeper[] | { goalkeepers: Goalkeeper[] }>(`/api/goalkeepers?team_id=${sessionData.team_id}`);
-      setGoalkeepers(Array.isArray(goalkeeperData) ? goalkeeperData : goalkeeperData.goalkeepers || []);
+      const goalkeepersList = Array.isArray(goalkeeperData) ? goalkeeperData : goalkeeperData.goalkeepers || [];
+      setGoalkeepers(goalkeepersList);
 
       // Obtener asistencias existentes
       const attendanceData = await apiGet<any[]>(`/api/sessions/${sessionId}/attendance`);
@@ -82,7 +83,7 @@ export default function SessionAttendancePage() {
       }
 
       // Inicializar asistencias para porteros sin registro
-      goalkeeperData.forEach((gk: Goalkeeper) => {
+      goalkeepersList.forEach((gk: Goalkeeper) => {
         if (!attendanceMap.has(gk.id)) {
           attendanceMap.set(gk.id, {
             goalkeeper_id: gk.id,

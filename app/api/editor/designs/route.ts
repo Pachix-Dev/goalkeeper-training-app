@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateRequest } from '@/lib/auth/middleware';
 import { TrainingDesignModel } from '@/lib/db/models/TrainingDesignModel';
 import { createDesignSchema } from '@/lib/validations/editor';
+import { writeFile } from 'fs/promises';
+import { join } from 'path';
+import { randomUUID } from 'crypto';
 
 export async function GET(req: NextRequest) {
   try {
@@ -19,8 +22,30 @@ export async function POST(req: NextRequest) {
     const auth = await authenticateRequest(req);
     if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const body = await req.json();
-    const validated = createDesignSchema.parse(body);
-    const created = await TrainingDesignModel.create(auth.id, validated);
+    
+    // Extraer la imagen si existe
+    const { imageDataUrl, ...designData } = body;
+    let imgFilename: string | undefined;
+    
+    if (imageDataUrl) {
+      // Generar UUID para el nombre del archivo
+      imgFilename = `${randomUUID()}.png`;
+      const publicPath = join(process.cwd(), 'public', 'designs', imgFilename);
+      
+      // Convertir base64 a buffer
+      const base64Data = imageDataUrl.replace(/^data:image\/png;base64,/, '');
+      const buffer = Buffer.from(base64Data, 'base64');
+      
+      // Guardar archivo
+      await writeFile(publicPath, buffer);
+    }
+    
+    const validated = createDesignSchema.parse(designData);
+    const created = await TrainingDesignModel.create(auth.id, {
+      ...validated,
+      img: imgFilename
+    });
+    
     return NextResponse.json({ design: created }, { status: 201 });
   } catch (e: any) {
     if (e.name === 'ZodError') {

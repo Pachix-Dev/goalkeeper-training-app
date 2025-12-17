@@ -64,7 +64,13 @@ const FIELD_VIEWS: FieldView[] = [
   { id: 'goal-area-color', label: 'Neutral 3 (color)', type: 'color', color: '#88c162' }
 ];
 
-export default function TacticalEditor() {
+interface TacticalEditorProps {
+  mode?: string;
+  designId?: number;
+  onDesignSaved?: (designId: number) => void;
+}
+
+export default function TacticalEditor({ mode, designId, onDesignSaved }: TacticalEditorProps = {}) {
   const t = useTranslations();
   const locale = useLocale();
   const [fieldView, setFieldView] = useState<FieldView>(FIELD_VIEWS[0]);
@@ -75,6 +81,12 @@ export default function TacticalEditor() {
   const [title, setTitle] = useState('');
   const [editor, setEditor] = useState<Editor | null>(null);
   const [preferredcolor, setPreferredcolor] = useState<string>('default');
+  const [currentDesignId, setCurrentDesignId] = useState<number | undefined>(designId);
+
+  // Sincronizar currentDesignId con prop designId cuando cambia
+  useEffect(() => {
+    setCurrentDesignId(designId);
+  }, [designId]);
 
   const handleViewChange = (view: FieldView) => setFieldView(view);
 
@@ -90,6 +102,25 @@ export default function TacticalEditor() {
   }, []);
 
   useEffect(() => { fetchDesigns(); }, [fetchDesigns]);
+
+  // Cargar diseño si se pasa designId, o limpiar si no hay
+  useEffect(() => {
+    if (!editor) return;
+    
+    if (currentDesignId) {
+      // Si hay designId, cargar el diseño
+      loadDesign(currentDesignId);
+    } else {
+      // Si NO hay designId, limpiar el editor (nueva tarea)
+      const shapes = editor.getCurrentPageShapes();
+      const nonBackgroundShapes = shapes.filter((s) => s.type !== 'field-background');
+      if (nonBackgroundShapes.length > 0) {
+        editor.deleteShapes(nonBackgroundShapes.map(s => s.id));
+      }
+      // Resetear título
+      setTitle('');
+    }
+  }, [editor, currentDesignId]);
 
   // Crear o reemplazar el fondo cuando cambia la vista
   useEffect(() => {
@@ -148,14 +179,54 @@ export default function TacticalEditor() {
     setSaving(true);
     try {
       const snapshot = editor.getSnapshot();
-      const res = await fetch('/api/editor/designs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders() },
-        body: JSON.stringify({ title, data: snapshot, locale })
+      
+      // Generar imagen PNG del canvas
+      const ids = [...editor.getCurrentPageShapeIds()];
+      const pixelRatio = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
+      
+      // Exportar a PNG
+      const { blob } = await editor.toImage(ids, {
+        format: 'png',
+        background: true,
+        padding: 0,
+        pixelRatio
       });
+      
+      // Convertir blob a base64
+      const imageDataUrl = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(blob);
+      });
+      
+      // Si existe currentDesignId, actualizar; si no, crear nuevo
+      const isUpdate = !!currentDesignId;
+      const url = isUpdate 
+        ? `/api/editor/designs/${currentDesignId}` 
+        : '/api/editor/designs';
+      const method = isUpdate ? 'PUT' : 'POST';
+      
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        body: JSON.stringify({ title, data: snapshot, locale, imageDataUrl })
+      });
+      
       if (res.ok) {
+        const json = await res.json();
+        const designId = json.design?.id || currentDesignId;
+        
+        if (!isUpdate) {
+          setCurrentDesignId(designId);
+        }
+        
         setTitle('');
         fetchDesigns();
+        
+        // Si hay callback para regresar con el design_id
+        if (onDesignSaved && designId) {
+          onDesignSaved(designId);
+        }
       }
     } finally { setSaving(false); }
   };
@@ -233,7 +304,8 @@ export default function TacticalEditor() {
             {saving ? t('editor.saving') : t('editor.save')}
           </button>
         </div>
-        <div className="bg-white shadow rounded px-3 py-2 w-80 max-h-52 overflow-y-auto">
+
+        <div className="bg-white shadow rounded px-3 py-2 w-80 max-h-28 overflow-y-auto">
           <p className="text-xs font-semibold mb-2">{t('editor.myDesigns')}</p>
           {loadingDesigns && <p className="text-xs">{t('common.loading')}</p>}
           {!loadingDesigns && designs.length === 0 && (
@@ -244,13 +316,13 @@ export default function TacticalEditor() {
               <li key={d.id} className="flex items-center justify-between text-xs border rounded px-2 py-1">
                 <span className="truncate max-w-[130px]" title={d.title}>{d.title}</span>
                 <div className="flex gap-1">
-                  <button onClick={() => loadDesign(d.id)} className="px-2 py-0.5 bg-green-600 text-white rounded">{t('editor.load')}</button>
-                  <button onClick={() => deleteDesign(d.id)} className="px-2 py-0.5 bg-red-600 text-white rounded">{t('editor.delete')}</button>
+                  <button onClick={() => loadDesign(d.id)} className="px-2 py-0.5 bg-green-600 text-white rounded">{t('editor.load')}</button>                  
                 </div>
               </li>
             ))}
           </ul>
         </div>
+
       </div>
     </div>
   );

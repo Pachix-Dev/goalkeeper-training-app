@@ -142,7 +142,7 @@ export default function NewGoalkeeperPage() {
                   name="team_id"
                   value={formData.team_id}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
                 >
                   <option value="">{t('selectTeam')}</option>
                   {teams.map(team => (
@@ -216,7 +216,7 @@ export default function NewGoalkeeperPage() {
                     name="dominant_hand"
                     value={formData.dominant_hand}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-black"
                   >
                     <option value="">{t('selectDominantHand')}</option>
                     <option value="left">{t('leftHand')}</option>

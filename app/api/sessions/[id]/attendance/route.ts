@@ -61,9 +61,14 @@ export const GET = requireAuth(async (request: NextRequest, user: AuthUser, cont
     const { id } = await params;
     const sessionId = parseInt(id);
 
+    console.log('GET Attendance - sessionId:', sessionId, 'userId:', user.id);
+
     // Verificar que la sesión pertenece al usuario
     const session = await TrainingSessionModel.findById(sessionId);
+    console.log('Session found:', session);
+    
     if (session.user_id !== user.id) {
+      console.log('Unauthorized: session.user_id', session.user_id, 'vs user.id', user.id);
       return NextResponse.json(
         { error: 'No autorizado' },
         { status: 403 }
@@ -71,9 +76,11 @@ export const GET = requireAuth(async (request: NextRequest, user: AuthUser, cont
     }
 
     const attendances = await GoalkeeperAttendanceModel.findBySession(sessionId);
+    console.log('Attendances found:', attendances.length);
 
     return NextResponse.json(attendances);
   } catch (error: any) {
+    console.error('Error in GET attendance:', error);
     if (error.message === 'Sesión no encontrada') {
       return NextResponse.json(
         { error: 'Sesión no encontrada' },
@@ -81,9 +88,8 @@ export const GET = requireAuth(async (request: NextRequest, user: AuthUser, cont
       );
     }
 
-    console.error('Error fetching session attendance:', error);
     return NextResponse.json(
-      { error: 'Error al obtener asistencias' },
+      { error: 'Error al obtener asistencias', details: error.message },
       { status: 500 }
     );
   }

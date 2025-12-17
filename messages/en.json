@@ -64,8 +64,10 @@
   },
   "common": {
     "save": "Save",
+    "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
+    "deleting": "Deleting...",
     "edit": "Edit",
     "create": "Create",
     "search": "Search",
@@ -83,7 +85,14 @@
     "active": "Active",
     "inactive": "Inactive",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "limit": "Limit",
+    "goalkeeper": "Goalkeeper",
+    "team": "Team",
+    "noDate": "No date",
+    "information": "Information",
+    "details": "Details",
+    "select": "Select"
   },
   "teams": {
     "title": "Teams",
@@ -265,7 +274,19 @@
     "basicInfo": "Basic Information",
     "taskSetup": "Task Setup",
     "additionalResources": "Additional Resources",
-    "editTaskSubtitle": "Update task information"
+    "editTaskSubtitle": "Update task information",
+    "drawExercise": "Draw Exercise",
+    "drawExerciseDescription": "Create tactical diagram for this exercise",
+    "viewDiagram": "View Diagram",
+    "editDiagram": "Edit Diagram",
+    "noDiagram": "No diagram",
+    "diagramLinked": "Diagram linked successfully",
+    "removeDiagram": "Remove diagram",
+    "diagramSection": "Tactical Diagram",
+    "viewFullscreen": "View fullscreen",
+    "print": "Print",
+    "diagram": "Diagram",
+    "hasDiagram": "This task has a tactical diagram"
   },
   "sessions": {
     "title": "Training Sessions",
@@ -351,7 +372,9 @@
     "filterByType": "Filter by type",
     "allTeams": "All teams",
     "allTypes": "All types",
-    "allStatuses": "All statuses"
+    "allStatuses": "All statuses",
+    "tacticalDiagrams": "Tactical Diagrams",
+    "print": "Print"
   },
   "attendance": {
     "title": "Attendance",
@@ -586,7 +609,25 @@
       "goalkeeperRequired": "Select a goalkeeper",
       "invalidDate": "Invalid date",
       "invalidUrl": "Invalid URL"
-    }
+    },
+    "errors": {
+      "failedToUpdate": "Failed to update penalty",
+      "notFound": "Penalty not found"
+    },
+    "selectGoalkeeper": "Select a goalkeeper",
+    "opponentName": "Opponent name",
+    "selectFoot": "Select foot",
+    "leftFoot": "Left foot",
+    "rightFoot": "Right foot",
+    "saved": "Saved",
+    "goal": "Goal",
+    "missed": "Missed",
+    "post": "Hit post",
+    "selectDirection": "Select direction",
+    "left": "Left",
+    "center": "Center",
+    "right": "Right",
+    "notesPlaceholder": "Add notes or observations about the penalty..."
   },
   "matches": {
     "title": "Match Analysis",
@@ -610,6 +651,7 @@
     "rating": "Rating",
     "strengths": "Strengths",
     "areasForImprovement": "Areas for Improvement",
+    "notes": "Notes",
     "videoUrl": "Video URL",
     "deleteMatch": "Delete Analysis",
     "confirmDelete": "Delete this match analysis?",
@@ -719,7 +761,9 @@
       "minGoalkeepers": "Select at least 2 goalkeepers",
       "maxGoalkeepers": "Maximum 5 goalkeepers",
       "compare": "Compare",
-      "noData": "No data to compare"
+      "noData": "No data to compare",
+      "selectAtLeastTwo": "You must select at least 2 goalkeepers",
+      "selected": "selected"
     },
     "topPerformers": {
       "title": "Top Performers",

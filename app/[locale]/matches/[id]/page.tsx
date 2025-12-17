@@ -201,7 +201,9 @@ export default function MatchDetailPage({
               <div>
                 <p className="text-sm text-gray-600 mb-1">{t('rating')}</p>
                 <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getRatingColor(match.rating)}`}>
-                  {match.rating.toFixed(1)}
+                  {typeof match.rating === 'number' 
+                    ? match.rating.toFixed(1) 
+                    : parseFloat(match.rating).toFixed(1)}
                 </span>
               </div>
             )}
@@ -240,7 +242,9 @@ export default function MatchDetailPage({
                   />
                 </div>
                 <span className="text-lg font-bold text-indigo-700">
-                  {match.distribution_success_rate.toFixed(1)}%
+                  {typeof match.distribution_success_rate === 'number' 
+                    ? match.distribution_success_rate.toFixed(1) 
+                    : parseFloat(match.distribution_success_rate).toFixed(1)}%
                 </span>
               </div>
             </div>

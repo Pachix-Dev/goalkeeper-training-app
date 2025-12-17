@@ -50,7 +50,7 @@ export class GoalkeeperAttendanceModel {
     const [rows] = await pool.execute<GoalkeeperAttendance[]>(
       `SELECT ga.*, 
        CONCAT(g.first_name, ' ', g.last_name) as goalkeeper_name,
-       g.photo_url as goalkeeper_photo,
+       g.photo as goalkeeper_photo,
        ts.title as session_title,
        ts.session_date
        FROM goalkeeper_attendance ga
@@ -72,9 +72,8 @@ export class GoalkeeperAttendanceModel {
     const [rows] = await pool.execute<GoalkeeperAttendance[]>(
       `SELECT ga.*, 
        CONCAT(g.first_name, ' ', g.last_name) as goalkeeper_name,
-       g.photo_url as goalkeeper_photo,
-       g.jersey_number,
-       g.position
+       g.photo as goalkeeper_photo,
+       g.jersey_number
        FROM goalkeeper_attendance ga
        LEFT JOIN goalkeepers g ON ga.goalkeeper_id = g.id
        WHERE ga.session_id = ?
@@ -236,7 +235,7 @@ export class GoalkeeperAttendanceModel {
   // Obtener porteros sin asistencia registrada para una sesión
   static async getGoalkeepersWithoutAttendance(sessionId: number, teamId: number): Promise<any[]> {
     const [rows] = await pool.execute<RowDataPacket[]>(
-      `SELECT g.id, g.first_name, g.last_name, g.jersey_number, g.photo_url
+      `SELECT g.id, g.first_name, g.last_name, g.jersey_number, g.photo
        FROM goalkeepers g
        WHERE g.team_id = ?
        AND g.id NOT IN (

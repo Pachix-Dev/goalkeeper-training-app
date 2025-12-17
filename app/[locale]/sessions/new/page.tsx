@@ -41,8 +41,8 @@ export default function NewSessionPage() {
 
   const loadTeams = async () => {
     try {
-      const data = await apiGet<Team[]>('/api/teams');
-      setTeams(Array.isArray(data) ? data : []);
+      const data = await apiGet<{ teams: Team[] }>('/api/teams');
+      setTeams(Array.isArray(data.teams) ? data.teams : []);
     } catch (error) {
       console.error('Error loading teams:', error);
     }

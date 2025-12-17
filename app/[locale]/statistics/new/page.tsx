@@ -4,6 +4,7 @@ import { useState, useEffect, use } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { apiGet, apiPost } from '@/lib/utils/api';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -45,8 +46,7 @@ export default function NewStatisticsPage({ params }: PageProps) {
 
   const loadGoalkeepers = async () => {
     try {
-      const response = await fetch('/api/goalkeepers');
-      const data = await response.json();
+      const data = await apiGet<Goalkeeper[] | { goalkeepers: Goalkeeper[] }>('/api/goalkeepers');
       const goalkeeperArray = Array.isArray(data) ? data : data.goalkeepers || [];
       setGoalkeepers(goalkeeperArray);
     } catch (error) {
@@ -60,23 +60,14 @@ export default function NewStatisticsPage({ params }: PageProps) {
     setError('');
 
     try {
-      const response = await fetch('/api/statistics', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          goalkeeper_id: parseInt(formData.goalkeeper_id)
-        })
+      await apiPost('/api/statistics', {
+        ...formData,
+        goalkeeper_id: parseInt(formData.goalkeeper_id)
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Error al crear estadísticas');
-      }
 
       router.push(`/${resolvedParams.locale}/statistics`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
+      setError(err instanceof Error ? err.message : 'Error al crear estadísticas');
     } finally {
       setLoading(false);
     }

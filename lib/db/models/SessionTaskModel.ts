@@ -29,6 +29,8 @@ export interface SessionTask extends RowDataPacket {
   task_title?: string;
   task_category?: string;
   task_difficulty?: string;
+  design_id?: number | null;
+  design_img?: string | null;
 }
 
 export class SessionTaskModel {
@@ -54,9 +56,11 @@ export class SessionTaskModel {
   // Obtener por ID
   static async findById(id: number): Promise<SessionTask> {
     const [rows] = await pool.execute<SessionTask[]>(
-      `SELECT st.*, t.title as task_title, t.category as task_category, t.difficulty as task_difficulty
+      `SELECT st.*, t.title as task_title, t.category as task_category, t.difficulty as task_difficulty,
+       t.design_id, td.img as design_img
        FROM session_tasks st
        LEFT JOIN tasks t ON st.task_id = t.id
+       LEFT JOIN training_designs td ON t.design_id = td.id
        WHERE st.id = ?`,
       [id]
     );
@@ -72,9 +76,11 @@ export class SessionTaskModel {
   static async findBySession(sessionId: number): Promise<SessionTask[]> {
     const [rows] = await pool.execute<SessionTask[]>(
       `SELECT st.*, t.title as task_title, t.category as task_category, 
-       t.difficulty as task_difficulty, t.description as task_description
+       t.difficulty as task_difficulty, t.description as task_description,
+       t.design_id, td.img as design_img
        FROM session_tasks st
        LEFT JOIN tasks t ON st.task_id = t.id
+       LEFT JOIN training_designs td ON t.design_id = td.id
        WHERE st.session_id = ?
        ORDER BY st.order_number ASC`,
       [sessionId]

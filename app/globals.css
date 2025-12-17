@@ -19,12 +19,48 @@
   }
 }
 
-body {
-  
-  color: var(--foreground);
+body {    
   font-family: Arial, Helvetica, sans-serif;
 }
 
 .tl-watermark_SEE-LICENSE{
   display: none !important;
+}
+
+/* Print Styles */
+@media print {
+  @page {
+    margin: 1cm;
+  }
+
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Evitar saltos de página dentro de las tarjetas */
+  .print\:break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Ocultar navegación y elementos no necesarios */
+  nav, header, footer, aside {
+    display: none !important;
+  }
+
+  /* Ajustar contenido para impresión */
+  .min-h-screen {
+    min-height: auto;
+  }
+
+  /* Asegurar que los colores se impriman */
+  * {
+    color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
@@ -21,15 +21,40 @@ interface Task {
   instructions: string | null;
   video_url: string | null;
   image_url: string | null;
+  design_id: number | null;
   is_public: boolean;
 }
+
+const getCategoryLabel = (category: string, t: any): string => {
+  const labels: Record<string, string> = {
+    technical: t('technical'),
+    tactical: t('tactical'),
+    physical: t('physical'),
+    psychological: t('psychological'),
+    goalkeeper_specific: t('goalkeeper_specific')
+  };
+  return labels[category] || category;
+};
+
+const getDifficultyLabel = (difficulty: string, t: any): string => {
+  const labels: Record<string, string> = {
+    beginner: t('beginner'),
+    intermediate: t('intermediate'),
+    advanced: t('advanced')
+  };
+  return labels[difficulty] || difficulty;
+};
+
+const STORAGE_KEY_PREFIX = 'task-edit-draft-';
 
 export default function EditTaskPage() {
   const t = useTranslations('tasks');
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const locale = params.locale as string;
   const taskId = params.id as string;
+  const STORAGE_KEY = STORAGE_KEY_PREFIX + taskId;
 
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -45,6 +70,7 @@ export default function EditTaskPage() {
     instructions: '',
     video_url: '',
     image_url: '',
+    design_id: null as number | null,
     is_public: false
   });
 
@@ -62,23 +88,54 @@ export default function EditTaskPage() {
     loadTask();
   }, [taskId]);
 
+  // Guardar formData en sessionStorage cada vez que cambie (excepto durante carga inicial)
+  useEffect(() => {
+    if (!loadingData) {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+    }
+  }, [formData, loadingData, STORAGE_KEY]);
+
+  // Capturar design_id cuando se regresa del editor
+  useEffect(() => {
+    const designId = searchParams.get('design_id');
+    if (designId) {
+      setFormData(prev => ({ ...prev, design_id: parseInt(designId) }));
+    }
+  }, [searchParams]);
+
   const loadTask = async () => {
     try {
       setLoadingData(true);
-      const data = await apiGet<Task>(`/api/tasks/${taskId}`);
+      
+      // Primero intentar cargar desde sessionStorage (si hay cambios no guardados)
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          setFormData(JSON.parse(saved));
+          setLoadingData(false);
+          return; // Usar datos guardados en vez de recargar
+        } catch (e) {
+          console.error('Error parsing saved form data:', e);
+        }
+      }
+      
+      // Si no hay datos guardados, cargar desde API
+      const data = await apiGet<{ task: Task }>(`/api/tasks/${taskId}`);
+      const task = data.task;
       setFormData({
-        title: data.title,
-        description: data.description || '',
-        category: data.category,
-        subcategory: data.subcategory || '',
-        duration: data.duration?.toString() || '',
-        difficulty: data.difficulty || '',
-        objectives: data.objectives || '',
-        materials: data.materials || '',
-        instructions: data.instructions || '',
-        video_url: data.video_url || '',
-        image_url: data.image_url || '',
-        is_public: data.is_public
+        title: task.title,
+        description: task.description || '',
+        category: task.category,
+        subcategory: task.subcategory || '',
+        duration: task.duration?.toString() || '',
+        difficulty: task.difficulty || '',
+        objectives: task.objectives || '',
+        materials: task.materials || '',
+        instructions: task.instructions || '',
+        video_url: task.video_url || '',
+        image_url: task.image_url || '',
+        design_id: task.design_id,
+        is_public: task.is_public
       });
     } catch (error) {
       console.error(t('errorLoading'), error);
@@ -109,14 +166,19 @@ export default function EditTaskPage() {
     try {
       const payload = {
         ...formData,
-        duration: formData.duration ? parseInt(formData.duration) : null
+        duration: formData.duration ? parseInt(formData.duration) : null,
+        design_id: formData.design_id,
+        is_public: Boolean(formData.is_public)
       };
 
       await apiPut(`/api/tasks/${taskId}`, payload);
+      // Limpiar el draft guardado después de actualizar exitosamente
+      sessionStorage.removeItem(STORAGE_KEY);
       router.push(`/${locale}/tasks/${taskId}`);
-    } catch (error: any) {
+    } catch (error) {
       console.error(t('errorUpdating'), error);
-      alert(error.message || t('errorUpdating'));
+      const message = error instanceof Error ? error.message : t('errorUpdating');
+      alert(message);
     } finally {
       setLoading(false);
     }
@@ -194,7 +256,7 @@ export default function EditTaskPage() {
                   <option value="">{t('selectCategory')}</option>
                   {categories.map((cat) => (
                     <option key={cat} value={cat}>
-                      {t(cat as any)}
+                      {getCategoryLabel(cat, t)}
                     </option>
                   ))}
                 </select>
@@ -240,7 +302,7 @@ export default function EditTaskPage() {
                   <option value="">{t('selectDifficulty')}</option>
                   {difficulties.map((diff) => (
                     <option key={diff} value={diff}>
-                      {t(diff as any)}
+                      {getDifficultyLabel(diff, t)}
                     </option>
                   ))}
                 </select>
@@ -322,6 +384,34 @@ export default function EditTaskPage() {
                   onChange={handleChange}
                   placeholder={t('imageUrlPlaceholder')}
                 />
+              </div>
+
+              <div className="border-t pt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('diagramSection')}
+                </label>
+                <p className="text-sm text-gray-600 mb-3">
+                  {t('drawExerciseDescription')}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    const returnUrl = encodeURIComponent(window.location.href);
+                    // Solo pasar design_id si ya existe (para editarlo)
+                    const editorUrl = formData.design_id 
+                      ? `/${locale}/editor?design_id=${formData.design_id}&returnTo=${returnUrl}&mode=task`
+                      : `/${locale}/editor?returnTo=${returnUrl}&mode=task`;
+                    router.push(editorUrl);
+                  }}
+                >
+                  {formData.design_id ? t('editDiagram') : t('drawExercise')}
+                </Button>
+                {formData.design_id && (
+                  <p className="text-sm text-green-600 mt-2">
+                    ✓ {t('diagramLinked')}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center gap-2">

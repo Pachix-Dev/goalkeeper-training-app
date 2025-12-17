@@ -1,34 +1,85 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
 import { apiPost } from '@/lib/utils/api';
 
+const STORAGE_KEY = 'task-form-draft';
+
+type TaskFormData = {
+  title: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  duration: string;
+  difficulty: string;
+  objectives: string;
+  materials: string;
+  instructions: string;
+  video_url: string;
+  image_url: string;
+  design_id: number | null;
+  is_public: boolean;
+};
+
+const defaultFormData: TaskFormData = {
+  title: '',
+  description: '',
+  category: '',
+  subcategory: '',
+  duration: '',
+  difficulty: '',
+  objectives: '',
+  materials: '',
+  instructions: '',
+  video_url: '',
+  image_url: '',
+  design_id: null,
+  is_public: false
+};
+
 export default function NewTaskPage() {
   const t = useTranslations('tasks');
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const locale = params.locale as string;
 
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    subcategory: '',
-    duration: '',
-    difficulty: '',
-    objectives: '',
-    materials: '',
-    instructions: '',
-    video_url: '',
-    image_url: '',
-    is_public: false
+  const [formData, setFormData] = useState<TaskFormData>(() => {
+    // Intentar cargar datos guardados de sessionStorage
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved) as Partial<TaskFormData>;
+          if (parsed && typeof parsed === 'object') {
+            return { ...defaultFormData, ...parsed };
+          }
+        } catch (e) {
+          console.error('Error parsing saved form data:', e);
+        }
+      }
+    }
+    return defaultFormData;
   });
+
+  // Guardar formData en sessionStorage cada vez que cambie
+  useEffect(() => {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+  }, [formData]);
+
+  // Capturar design_id cuando se regresa del editor
+  useEffect(() => {
+    const designId = searchParams.get('design_id');
+    if (designId) {
+      setFormData(prev => ({ ...prev, design_id: parseInt(designId) }));
+    }
+  }, [searchParams]);
 
   const categories = [
     'technical',
@@ -60,10 +111,13 @@ export default function NewTaskPage() {
     try {
       const payload = {
         ...formData,
-        duration: formData.duration ? parseInt(formData.duration) : null
+        duration: formData.duration ? parseInt(formData.duration) : null,
+        design_id: formData.design_id
       };
 
       await apiPost('/api/tasks', payload);
+      // Limpiar el draft guardado después de crear exitosamente
+      sessionStorage.removeItem(STORAGE_KEY);
       router.push(`/${locale}/tasks`);
     } catch (error: any) {
       console.error(t('errorCreating'), error);
@@ -263,6 +317,34 @@ export default function NewTaskPage() {
                   onChange={handleChange}
                   placeholder={t('imageUrlPlaceholder')}
                 />
+              </div>
+
+              <div className="border-t pt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t('diagramSection')}
+                </label>
+                <p className="text-sm text-gray-600 mb-3">
+                  {t('drawExerciseDescription')}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    const returnUrl = encodeURIComponent(window.location.href);
+                    // Solo pasar design_id si ya existe (para editarlo)
+                    const editorUrl = formData.design_id 
+                      ? `/${locale}/editor?design_id=${formData.design_id}&returnTo=${returnUrl}&mode=task`
+                      : `/${locale}/editor?returnTo=${returnUrl}&mode=task`;
+                    router.push(editorUrl);
+                  }}
+                >
+                  {formData.design_id ? t('editDiagram') : t('drawExercise')}
+                </Button>
+                {formData.design_id && (
+                  <p className="text-sm text-green-600 mt-2">
+                    ✓ {t('diagramLinked')}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center gap-2">

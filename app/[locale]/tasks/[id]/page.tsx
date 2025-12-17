@@ -3,9 +3,13 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { apiGet, apiDelete } from '@/lib/utils/api';
+
+const DesignPreview = dynamic(() => import('@/components/editor/DesignPreview'), { ssr: false });
+const DiagramModal = dynamic(() => import('@/components/editor/DiagramModal').then(m => ({ default: m.DiagramModal })), { ssr: false });
 
 interface Task {
   id: number;
@@ -20,6 +24,7 @@ interface Task {
   instructions: string | null;
   video_url: string | null;
   image_url: string | null;
+  design_id: number | null;
   is_public: boolean;
   user_id: number;
   created_at: string;
@@ -46,6 +51,26 @@ const getDifficultyColor = (difficulty: string): string => {
   return colors[difficulty] || 'bg-gray-500';
 };
 
+const getCategoryLabel = (category: string, t: any): string => {
+  const labels: Record<string, string> = {
+    technical: t('technical'),
+    tactical: t('tactical'),
+    physical: t('physical'),
+    psychological: t('psychological'),
+    goalkeeper_specific: t('goalkeeper_specific')
+  };
+  return labels[category] || category;
+};
+
+const getDifficultyLabel = (difficulty: string, t: any): string => {
+  const labels: Record<string, string> = {
+    beginner: t('beginner'),
+    intermediate: t('intermediate'),
+    advanced: t('advanced')
+  };
+  return labels[difficulty] || difficulty;
+};
+
 export default function TaskDetailPage() {
   const t = useTranslations('tasks');
   const params = useParams();
@@ -55,16 +80,21 @@ export default function TaskDetailPage() {
 
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showDiagramModal, setShowDiagramModal] = useState(false);
 
   useEffect(() => {
     loadTask();
   }, [taskId]);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   const loadTask = async () => {
     try {
       setLoading(true);
-      const data = await apiGet<Task>(`/api/tasks/${taskId}`);
-      setTask(data);
+      const data = await apiGet<{ task: Task }>(`/api/tasks/${taskId}`);
+      setTask(data.task);
     } catch (error) {
       console.error(t('errorLoading'), error);
       alert(t('errorLoading'));
@@ -122,14 +152,25 @@ export default function TaskDetailPage() {
             <div className="flex gap-2">
               <Button
                 variant="outline"
+                onClick={handlePrint}
+                className="print:hidden"
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                {t('print')}
+              </Button>
+              <Button
+                variant="outline"
                 onClick={() => router.push(`/${locale}/tasks/${taskId}/edit`)}
+                className="print:hidden"
               >
                 {t('editTask')}
               </Button>
               <Button
                 variant="outline"
                 onClick={handleDelete}
-                className="text-red-600 hover:bg-red-50"
+                className="text-red-600 hover:bg-red-50 print:hidden"
               >
                 {t('deleteTask')}
               </Button>
@@ -144,7 +185,7 @@ export default function TaskDetailPage() {
               task.category
             )}`}
           >
-            {t(task.category as any)}
+            {getCategoryLabel(task.category, t)}
           </span>
           {task.difficulty && (
             <div className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
@@ -154,7 +195,7 @@ export default function TaskDetailPage() {
                 )}`}
               />
               <span className="text-sm text-gray-700">
-                {t(task.difficulty as any)}
+                {getDifficultyLabel(task.difficulty, t)}
               </span>
             </div>
           )}
@@ -176,8 +217,44 @@ export default function TaskDetailPage() {
             <img
               src={task.image_url}
               alt={task.title}
-              className="w-full h-64 object-cover"
+              className="w-full"
             />
+          </Card>
+        )}
+
+        {/* Tactical Diagram */}
+        {task.design_id && (
+          <Card className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-xl font-semibold">{t('diagramSection')}</h2>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDiagramModal(true)}
+                  className="print:hidden"
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                  </svg>
+                  {t('viewFullscreen')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const returnUrl = encodeURIComponent(window.location.href);
+                    router.push(`/${locale}/editor?design_id=${task.design_id}&returnTo=${returnUrl}`);
+                  }}
+                  className="print:hidden"
+                >
+                  {t('editDiagram')}
+                </Button>
+              </div>
+            </div>
+           
+            <DesignPreview designId={task.design_id} className="w-full h-full rounded-lg border" />
+            
           </Card>
         )}
 
@@ -239,6 +316,15 @@ export default function TaskDetailPage() {
           </Card>
         )}
       </div>
+
+      {/* Diagram Modal */}
+      {showDiagramModal && task.design_id && (
+        <DiagramModal
+          designId={task.design_id}
+          title={`${t('diagramSection')} - ${task.title}`}
+          onClose={() => setShowDiagramModal(false)}
+        />
+      )}
     </div>
   );
 }

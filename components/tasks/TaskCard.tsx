@@ -14,6 +14,7 @@ interface TaskCardProps {
     subcategory: string | null;
     duration: number | null;
     difficulty: string | null;
+    design_id?: number | null;
     is_public: boolean;
   };
   onDelete?: (id: number) => void;
@@ -96,6 +97,14 @@ export function TaskCard({ task, onDelete }: TaskCardProps) {
             <span className="text-xs text-gray-600">
               {task.duration} {t('minutes')}
             </span>
+          )}
+          {task.design_id && (
+            <div className="flex items-center gap-1 bg-purple-50 text-purple-700 px-2 py-1 rounded" title={t('hasDiagram')}>
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <span className="text-xs font-medium">{t('diagram')}</span>
+            </div>
           )}
         </div>
 

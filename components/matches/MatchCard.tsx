@@ -83,7 +83,11 @@ export default function MatchCard({ match, locale, showGoalkeeper = false }: Mat
         
         {match.rating && (
           <div className={`px-3 py-2 rounded-lg text-center ${getRatingColor(match.rating)}`}>
-            <div className="text-2xl font-bold">{match.rating.toFixed(1)}</div>
+            <div className="text-2xl font-bold">
+              {typeof match.rating === 'number' 
+                ? match.rating.toFixed(1) 
+                : parseFloat(match.rating).toFixed(1)}
+            </div>
             <div className="text-xs">{t('rating')}</div>
           </div>
         )}

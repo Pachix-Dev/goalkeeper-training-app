@@ -13,6 +13,7 @@ export interface CreateTaskDTO {
   instructions?: string | null;
   video_url?: string | null;
   image_url?: string | null;
+  design_id?: number | null;
   user_id: number;
   is_public?: boolean;
 }
@@ -29,6 +30,7 @@ export interface UpdateTaskDTO {
   instructions?: string | null;
   video_url?: string | null;
   image_url?: string | null;
+  design_id?: number | null;
   is_public?: boolean;
 }
 
@@ -38,8 +40,8 @@ export class TaskModel {
     const sql = `
       INSERT INTO tasks 
       (title, description, category, subcategory, duration, difficulty, 
-       objectives, materials, instructions, video_url, image_url, user_id, is_public)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       objectives, materials, instructions, video_url, image_url, design_id, user_id, is_public)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
     const result: any = await query(sql, [
@@ -54,6 +56,7 @@ export class TaskModel {
       data.instructions || null,
       data.video_url || null,
       data.image_url || null,
+      data.design_id || null,
       data.user_id,
       data.is_public || false
     ]);
@@ -70,6 +73,56 @@ export class TaskModel {
     const sql = 'SELECT * FROM tasks WHERE id = ?';
     const results: Task[] = await query(sql, [id]);
     return results[0] || null;
+  }
+
+  // Buscar por ID con diseño asociado
+  static async findByIdWithDesign(id: number): Promise<Task & { design?: any } | null> {
+    const sql = `
+      SELECT 
+        t.*,
+        td.id as design_id_full,
+        td.title as design_title,
+        td.data as design_data,
+        td.created_at as design_created_at
+      FROM tasks t
+      LEFT JOIN training_designs td ON t.design_id = td.id
+      WHERE t.id = ?
+    `;
+    const results: any[] = await query(sql, [id]);
+    
+    if (!results[0]) return null;
+    
+    const row = results[0];
+    const task: any = {
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      category: row.category,
+      subcategory: row.subcategory,
+      duration: row.duration,
+      difficulty: row.difficulty,
+      objectives: row.objectives,
+      materials: row.materials,
+      instructions: row.instructions,
+      video_url: row.video_url,
+      image_url: row.image_url,
+      design_id: row.design_id,
+      user_id: row.user_id,
+      is_public: row.is_public,
+      created_at: row.created_at,
+      updated_at: row.updated_at
+    };
+    
+    if (row.design_id_full) {
+      task.design = {
+        id: row.design_id_full,
+        title: row.design_title,
+        data: row.design_data,
+        created_at: row.design_created_at
+      };
+    }
+    
+    return task;
   }
 
   // Buscar por usuario (tareas propias)
@@ -173,6 +226,10 @@ export class TaskModel {
     if (data.image_url !== undefined) {
       fields.push('image_url = ?');
       values.push(data.image_url);
+    }
+    if (data.design_id !== undefined) {
+      fields.push('design_id = ?');
+      values.push(data.design_id);
     }
     if (data.is_public !== undefined) {
       fields.push('is_public = ?');

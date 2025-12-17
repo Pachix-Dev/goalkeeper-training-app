@@ -159,3 +159,24 @@ Components (components/xxx/) - Componentes reutilizables
 Types (database.ts) - Interfaces TypeScript
 Validations (lib/validations/xxx.ts) - Schemas Zod
 Translations (es.json, en.json) - i18n
+
+🎯 Priorización de Integración del editor al proyecto
+FASE 1: Vinculación Básica (Inmediato)
+✅ Agregar design_id a tasks
+✅ Botón "Dibujar Ejercicio" en tasks/new
+✅ Guardar y vincular automáticamente
+
+FASE 2: Visualización (Corto plazo)
+✅ Componente DesignPreview
+✅ Mostrar diagramas en task detail
+✅ Modal para ver diseño completo
+
+FASE 3: Sesiones (Mediano plazo)
+✅ Ver diseños desde session_tasks
+✅ Imprimir sesión con diagramas
+✅ Compartir sesión con visualizaciones
+
+FASE 4: Análisis Avanzado (Largo plazo)
+✅ Situaciones de partido con editor
+✅ Mapas de calor de penaltis
+✅ Comparativas tácticas

@@ -7,7 +7,7 @@ interface UpcomingSession {
   id: number;
   session_date: string;
   start_time: string;
-  end_time: string;
+  end_time: string | null;
   team_name: string;
   session_type: string;
   status: string;
@@ -30,8 +30,15 @@ export default function UpcomingSessions({ sessions, locale }: UpcomingSessionsP
     });
   };
 
-  const formatTime = (timeString: string) => {
+  const formatTime = (timeString?: string | null) => {
+    if (!timeString) return '';
     return timeString.substring(0, 5);
+  };
+
+  const formatTimeRange = (startTime: string, endTime?: string | null) => {
+    const start = formatTime(startTime);
+    const end = formatTime(endTime);
+    return end ? `${start} - ${end}` : start;
   };
 
   const getSessionTypeColor = (type: string) => {
@@ -84,7 +91,7 @@ export default function UpcomingSessions({ sessions, locale }: UpcomingSessionsP
                 <div className="flex items-center gap-3 text-sm text-gray-700">
                   <span className="font-medium">{formatDate(session.session_date)}</span>
                   <span className="text-gray-400">•</span>
-                  <span>{formatTime(session.start_time)} - {formatTime(session.end_time)}</span>
+                  <span>{formatTimeRange(session.start_time, session.end_time)}</span>
                 </div>
               </div>
             </div>

@@ -27,6 +27,11 @@ export async function authenticatedFetch(
   const token = localStorage.getItem('token') || sessionStorage.getItem('token');
   
   if (!token) {
+    // Redirigir al login
+    if (typeof window !== 'undefined') {
+      const currentPath = window.location.pathname;
+      window.location.href = `/es/login?redirect=${encodeURIComponent(currentPath)}`;
+    }
     throw new Error('No se encontró token de autenticación');
   }
 

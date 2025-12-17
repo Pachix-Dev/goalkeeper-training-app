@@ -92,7 +92,7 @@ export default function GoalkeepersPage() {
               <p className="mt-1 text-gray-600">{t('subtitle')}</p>
             </div>
             <Link href={`/${locale}/goalkeepers/new`}>
-              <Button variant="primary">
+              <Button variant="primary" className='text-white'>
                 {t('createGoalkeeper')}
               </Button>
             </Link>

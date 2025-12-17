@@ -53,7 +53,7 @@ export default function PenaltyGrid({
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="grid grid-cols-3 gap-2 aspect-[3/2] border-4 border-gray-800 rounded-lg p-2 bg-gradient-to-b from-gray-100 to-gray-200">
+      <div className="grid grid-cols-3 gap-2 aspect-3/2 border-4 border-gray-800 rounded-lg p-2 bg-linear-to-b from-gray-100 to-gray-200">
         {/* Fila superior (high) */}
         {(['left', 'center', 'right'] as const).map((dir) => (
           <button
