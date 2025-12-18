@@ -5,12 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import StatsCard from '@/components/dashboard/StatsCard';
 import UpcomingSessions from '@/components/dashboard/UpcomingSessions';
 import RecentActivity from '@/components/dashboard/RecentActivity';
 import TopGoalkeepers from '@/components/dashboard/TopGoalkeepers';
+import { AppShell } from '@/components/layout/AppShell';
 
 interface DashboardStats {
   totals: {
@@ -146,7 +145,7 @@ export default function DashboardPage() {
     },
     {
       title: t('nav.statistics'),
-      description: 'Analiza estadísticas',
+      description: 'Analiza estadisticas',
       href: `/${locale}/statistics`,
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +165,7 @@ export default function DashboardPage() {
     },
     {
       title: t('nav.matchAnalysis'),
-      description: 'Análisis de acciones en partido',
+      description: 'Analisis de partido',
       href: `/${locale}/matches`,
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,48 +175,27 @@ export default function DashboardPage() {
     },
   ];
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {t('app.title')}
-              </h1>
-              <p className="text-sm text-gray-600">{t('app.description')}</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <LanguageSwitcher />
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">
-                    {user?.name}
-                  </p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
-                </div>
-                <Button onClick={handleLogout} variant="outline" className="text-sm">
-                  {t('auth.logout')}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+  const navItems = modules.map(({ title, href, icon }) => ({
+    label: title,
+    href,
+    icon,
+  }));
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  return (
+    <AppShell
+      navItems={navItems}
+      userName={user?.name}
+      userEmail={user?.email}
+      onLogout={handleLogout}
+    >
+      <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             {t('auth.welcome')}, {user?.name}
           </h2>
-          <p className="text-gray-600">
-            Panel de control general
-          </p>
+          <p className="text-gray-600">Panel de control general</p>
         </div>
 
-        {/* Stats Cards */}
         {loadingStats ? (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {[1, 2, 3, 4].map((i) => (
@@ -232,78 +210,57 @@ export default function DashboardPage() {
             <StatsCard
               title={t('nav.teams')}
               value={dashboardData.totals.teams}
-              icon="👥"
+              icon="TEAMS"
               color="blue"
             />
             <StatsCard
               title={t('nav.goalkeepers')}
               value={dashboardData.totals.goalkeepers}
-              icon="🧤"
+              icon="GK"
               color="green"
             />
             <StatsCard
               title={t('nav.sessions')}
               value={dashboardData.totals.sessions}
-              icon="📅"
+              icon="SESS"
               color="purple"
             />
             <StatsCard
               title={t('nav.tasks')}
               value={dashboardData.totals.tasks}
-              icon="📋"
+              icon="TASK"
               color="orange"
             />
           </div>
         ) : null}
 
-        {/* Activity Grid */}
         {dashboardData && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <UpcomingSessions 
-              sessions={dashboardData.upcomingSessions} 
-              locale={locale}
-            />
-            <RecentActivity 
-              recentMatches={dashboardData.recentMatches} 
-              locale={locale}
-            />
+            <UpcomingSessions sessions={dashboardData.upcomingSessions} locale={locale} />
+            <RecentActivity recentMatches={dashboardData.recentMatches} locale={locale} />
           </div>
         )}
 
-        {/* Top Goalkeepers */}
         {dashboardData && dashboardData.topGoalkeepers.length > 0 && (
           <div className="mb-8">
-            <TopGoalkeepers 
-              goalkeepers={dashboardData.topGoalkeepers}
-              locale={locale}
-            />
+            <TopGoalkeepers goalkeepers={dashboardData.topGoalkeepers} locale={locale} />
           </div>
         )}
 
-        {/* Modules Section */}
         <div className="mb-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">
-            Módulos de la Aplicación
-          </h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-4">Modulos de la Aplicacion</h3>
         </div>
 
-        {/* Modules Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {modules.map((module, index) => (
-            <a
-              key={index}
-              href={module.href || '#'}
-              className="block"
-            >
+            <a key={index} href={module.href || '#'} className="block">
               <Card className="hover:shadow-lg transition-shadow cursor-pointer group h-full">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-blue-100 text-blue-600 rounded-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
                     {module.icon}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                      {module.title}
-                    </h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{module.title}</h3>
                     <p className="text-sm text-gray-600">{module.description}</p>
                   </div>
                 </div>
@@ -311,7 +268,7 @@ export default function DashboardPage() {
             </a>
           ))}
         </div>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

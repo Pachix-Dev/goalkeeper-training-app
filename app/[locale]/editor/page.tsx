@@ -16,7 +16,6 @@ export default function EditorPage() {
   const { isAuthenticated, isLoading } = useAuth();
   
   const returnTo = searchParams.get('returnTo');
-  const mode = searchParams.get('mode'); // 'task' o 'session'
   const designIdParam = searchParams.get('design_id');
   const designId = designIdParam ? parseInt(designIdParam) : undefined;
 
@@ -52,8 +51,7 @@ export default function EditorPage() {
         <div className="text-sm text-gray-500">{t('editor.subtitle')}</div>
       </div>
       <div className="flex-1">
-        <TacticalEditor 
-          mode={mode || undefined}
+        <TacticalEditor           
           designId={designId}
           onDesignSaved={returnTo ? handleDesignSaved : undefined}
         />

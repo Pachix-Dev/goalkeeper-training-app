@@ -73,7 +73,7 @@ interface TacticalEditorProps {
   onDesignSaved?: (designId: number) => void;
 }
 
-export default function TacticalEditor({ mode, designId, onDesignSaved }: TacticalEditorProps = {}) {
+export default function TacticalEditor({ designId, onDesignSaved }: TacticalEditorProps = {}) {
   const t = useTranslations();
   const locale = useLocale();
   const [fieldView, setFieldView] = useState<FieldView>(FIELD_VIEWS[0]);
@@ -279,6 +279,7 @@ export default function TacticalEditor({ mode, designId, onDesignSaved }: Tactic
             persistenceKey="tactical-editor-v3"
             shapeUtils={customShapeUtils}
             onMount={setEditor}
+            
           />
         </div>
       </div>
