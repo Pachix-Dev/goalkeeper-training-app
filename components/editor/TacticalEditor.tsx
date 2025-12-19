@@ -287,9 +287,9 @@ export default function TacticalEditor({ designId, onDesignSaved }: TacticalEdit
             <div className="h-full w-full rounded-b-lg overflow-hidden ">
               <Tldraw
                 autoFocus
-                persistenceKey="tactical-editor-v3"
+                persistenceKey="tactical-editor-v4"
                 shapeUtils={customShapeUtils}
-                onMount={setEditor}                
+                onMount={setEditor}                            
               />
             </div>
           </div>        

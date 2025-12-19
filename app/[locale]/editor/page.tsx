@@ -49,7 +49,7 @@ export default function EditorPage() {
       <div className="flex-1">
         <TacticalEditor           
           designId={designId}
-          onDesignSaved={returnTo ? handleDesignSaved : undefined}
+          onDesignSaved={returnTo ? handleDesignSaved : undefined}          
         />
       </div>
     </div>
