@@ -26,10 +26,11 @@ export class TrainingDesignModel {
   }
 
   static async listByUser(userId: number, limit = 50): Promise<TrainingDesign[]> {
+    const safeLimit = Number.isFinite(Number(limit)) ? Number(limit) : 50;
     const rows = await query<Array<TrainingDesign & { data: string }>>(
       `SELECT id, user_id, title, locale, data, img, training_session_id, created_at, updated_at
        FROM training_designs WHERE user_id = ? ORDER BY updated_at DESC LIMIT ?`,
-      [userId, limit]
+      [userId, safeLimit]
     );
     if (!rows || !Array.isArray(rows)) return [];
     return rows.map(r => {
