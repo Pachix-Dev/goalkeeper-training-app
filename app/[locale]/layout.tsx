@@ -5,6 +5,7 @@ import { locales } from '@/i18n';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { Geist, Geist_Mono } from "next/font/google";
 import '../globals.css';
+import { AppLayout } from '@/components/layout/AppLayout';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -58,7 +59,9 @@ export default async function LocaleLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
-            {children}
+            <AppLayout>
+              {children}
+            </AppLayout>
           </AuthProvider>
         </NextIntlClientProvider>
       </body>

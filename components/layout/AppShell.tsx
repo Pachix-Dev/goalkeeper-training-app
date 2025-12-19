@@ -41,7 +41,7 @@ export function AppShell({
     <div className="min-h-screen flex bg-gray-50">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 w-72 bg-white border-r border-gray-200 shadow-sm z-40 transform transition-transform duration-200 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 w-52 bg-white border-r border-gray-200 shadow-sm z-40 transform transition-transform duration-200 lg:translate-x-0 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -57,7 +57,7 @@ export function AppShell({
           <p className="text-xs text-gray-500 truncate">{userEmail}</p>
         </div>
 
-        <nav className="px-2 py-4 space-y-1 overflow-y-auto h-[calc(100vh-160px)]">
+        <nav className="px-2 py-4 space-y-1 overflow-y-auto h-[calc(100vh-260px)]">
           {navWithActive.map((item) => (
             <Link
               key={item.href}
@@ -101,7 +101,7 @@ export function AppShell({
       )}
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col min-h-screen lg:ml-72">
+      <div className="flex-1 flex flex-col min-h-screen lg:ml-52">
         <header className="sticky top-0 z-20 bg-white border-b border-gray-200">
           <div className="px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4">
             <button
@@ -113,26 +113,7 @@ export function AppShell({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-            <div className="flex-1 flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Panel</p>
-                <p className="text-lg font-semibold text-gray-900">Resumen</p>
-              </div>
-              <div className="hidden lg:flex items-center gap-3">
-                <LanguageSwitcher />
-                {userName && (
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">{userName}</p>
-                    <p className="text-xs text-gray-500">{userEmail}</p>
-                  </div>
-                )}
-                {onLogout && (
-                  <Button variant="outline" className="text-sm" onClick={onLogout}>
-                    Cerrar sesión
-                  </Button>
-                )}
-              </div>
-            </div>
+            
           </div>
         </header>
 

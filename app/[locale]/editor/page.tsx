@@ -45,11 +45,7 @@ export default function EditorPage() {
   };
 
   return (
-    <div className="h-screen flex flex-col">
-      <div className="border-b bg-white px-4 py-2 flex items-center justify-between">
-        <h1 className="font-semibold text-gray-800">{t('editor.title')}</h1>
-        <div className="text-sm text-gray-500">{t('editor.subtitle')}</div>
-      </div>
+    <div className="flex flex-col">      
       <div className="flex-1">
         <TacticalEditor           
           designId={designId}

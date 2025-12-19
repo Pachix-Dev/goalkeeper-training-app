@@ -61,10 +61,7 @@ const FIELD_VIEWS: FieldView[] = [
   { id: 'trasera-area-grande-1', label: 'Trasera area grande 1', type: 'image', image: '/canchas/TraseraAreaGrande.jpg' },
   { id: 'trasera-area-grande-2', label: 'Trasera area grande 2', type: 'image', image: '/canchas/TraseraAreaGrande2.jpg' },
   { id: 'zona-neutra-1', label: 'Zona neutra 1', type: 'image', image: '/canchas/ZonaNeutra1.jpg' },
-  { id: 'zona-neutra-2', label: 'Zona neutra 2', type: 'image', image: '/canchas/ZonaNeutra2.jpg' },
-  { id: 'full-color', label: 'Neutral 1(color)', type: 'color', color: '#6ba04d' },
-  { id: 'half-color', label: 'Neutral 2 (color)', type: 'color', color: '#7fb857' },
-  { id: 'goal-area-color', label: 'Neutral 3 (color)', type: 'color', color: '#88c162' }
+  { id: 'zona-neutra-2', label: 'Zona neutra 2', type: 'image', image: '/canchas/ZonaNeutra2.jpg' },  
 ];
 
 interface TacticalEditorProps {
@@ -257,157 +254,89 @@ export default function TacticalEditor({ designId, onDesignSaved }: TacticalEdit
   ], []);
 
   return (
-    <div className="flex h-full">
-      {/* Sidebar izquierda */}
-      <Palette 
-        editor={editor} 
-        preferredcolor={preferredcolor}
-        setPreferredcolor={setPreferredcolor}
-      />
-      {/* Canvas */}
-      <div className="flex-1 relative flex items-center justify-center ">
-        <div 
-          className="relative w-full"
-          style={{
-            aspectRatio: `${FIELD_IMAGE_WIDTH} / ${FIELD_IMAGE_HEIGHT}`,
-            maxHeight: '659px',
-            maxWidth: '1300px',
-          }}
-        >
-          <Tldraw
-            autoFocus
-            persistenceKey="tactical-editor-v3"
-            shapeUtils={customShapeUtils}
-            onMount={setEditor}
-            
-          />
+    <div className="flex flex-col gap-4 h-[calc(100vh-140px)]">
+      <div className="bg-white border rounded-xl shadow-sm px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="min-w-[220px]">
+          <p className="text-lg font-semibold text-gray-900">{t('editor.title')}</p>
+          <p className="text-sm text-gray-500">{t('editor.subtitle')}</p>
         </div>
-      </div>
-      {/* Sidebar derecha */}
-      <RightPanel 
-        onChangeView={handleViewChange} 
-        editor={editor} 
-        currentView={fieldView}
-        preferredcolor={preferredcolor}
-        setPreferredcolor={setPreferredcolor}
-      />
-      {/* Panel inferior flotante guardar/cargar */}
-      <div className="absolute left-60 right-60 bottom-0 flex gap-4 px-4 text-black">
-        <div className="bg-white shadow rounded px-3 py-2 flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <input
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder={t('editor.titlePlaceholder')}
-            className="border rounded px-2 py-1 text-sm w-60"
+            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-64 sm:w-72 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
           <button
             disabled={!title || saving}
             onClick={saveDesign}
-            className="px-3 py-1 text-sm rounded bg-blue-600 text-white disabled:opacity-50"
+            className="px-4 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:bg-blue-700 transition-colors"
           >
-            {saving ? t('editor.saving') : t('editor.save')}
+            {saving ? t('editor.saving') : currentDesignId ? t('editor.update') : t('editor.save')}
           </button>
         </div>
+      </div>
 
-        <div className="bg-white shadow rounded px-3 py-2 w-80 max-h-28 overflow-y-auto">
-          <p className="text-xs font-semibold mb-2">{t('editor.myDesigns')}</p>
-          {loadingDesigns && <p className="text-xs">{t('common.loading')}</p>}
-          {!loadingDesigns && designs.length === 0 && (
-            <p className="text-xs text-gray-500">No hay disenos</p>
-          )}
-          <ul className="space-y-1">
-            {designs.map(d => (
-              <li key={d.id} className="flex items-center justify-between text-xs border rounded px-2 py-1">
-                <span className="truncate max-w-[130px]" title={d.title}>{d.title}</span>
-                <div className="flex gap-1">
-                  <button onClick={() => loadDesign(d.id)} className="px-2 py-0.5 bg-green-600 text-white rounded">{t('editor.load')}</button>                  
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-4 flex-1 min-h-0">
+        <div className="bg-white border rounded-xl shadow-sm flex flex-col min-h-0">
+          
+          <div className="flex-1 min-h-0">
+            <div className="h-full w-full rounded-b-lg overflow-hidden ">
+              <Tldraw
+                autoFocus
+                persistenceKey="tactical-editor-v3"
+                shapeUtils={customShapeUtils}
+                onMount={setEditor}
+                style={{ height: '100%', width: '100%' }}
+              />
+            </div>
+          </div>        
+        </div>
+
+        <div className="flex flex-col gap-4 min-h-0">
+          <RightPanel 
+            onChangeView={handleViewChange} 
+            editor={editor} 
+            currentView={fieldView}
+            preferredcolor={preferredcolor}
+            setPreferredcolor={setPreferredcolor}
+          />
+          <div className="bg-white border rounded-xl shadow-sm p-4 min-h-0 flex flex-col">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-semibold text-gray-800">{t('editor.myDesigns')}</p>
+              <button
+                onClick={fetchDesigns}
+                className="text-xs px-3 py-1 rounded-full border border-gray-200 hover:border-blue-300 hover:text-blue-600 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-2 overflow-y-auto min-h-0 max-h-[280px] pr-1">
+              {loadingDesigns && <p className="text-xs text-gray-500">{t('common.loading')}</p>}
+              {!loadingDesigns && designs.length === 0 && (
+                <p className="text-xs text-gray-500">No hay disenos</p>
+              )}
+              {designs.map(d => (
+                <div
+                  key={d.id}
+                  className="flex items-center justify-between text-xs border rounded-lg px-3 py-2 hover:border-blue-300 transition-colors"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-800 truncate max-w-[180px]" title={d.title}>{d.title}</p>
+                    <p className="text-[11px] text-gray-500">{new Date(d.updated_at).toLocaleDateString(locale)}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => loadDesign(d.id)} className="px-2 py-1 bg-green-600 text-white rounded text-[11px] hover:bg-green-700">{t('editor.load')}</button>
+                    {/*<button onClick={() => deleteDesign(d.id)} className="px-2 py-1 bg-red-600 text-white rounded text-[11px] hover:bg-red-700">{t('editor.delete')}</button>*/}
+                  </div>
                 </div>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </div>
+          </div>
         </div>
-
       </div>
-    </div>
-  );
-}
-
-function Palette({ 
-  editor, 
-  preferredcolor, 
-  setPreferredcolor 
-}: { 
-  editor: Editor | null;
-  preferredcolor: string;
-  setPreferredcolor: (color: string) => void;
-}) {
-  const t = useTranslations();
-
-  const addItem = useCallback((item: PaletteItem) => {
-    if (!editor) return;
-    // Posicionar elementos en el centro del canvas (0,0) con variación aleatoria
-    const baseX = Math.random() * 200 - (-100); // Entre -100 y 100
-    const baseY = Math.random() * 200 - (-100); // Entre -100 y 100
-
-    if (item.type === 'geo' && item.geo) {
-      const shape = {
-        type: 'geo',
-        x: baseX,
-        y: baseY,
-        props: {
-          w: item.geo.w,
-          h: item.geo.h,
-          fill: item.geo.fill || '#CCCCCC',
-          dash: item.geo.dash || 'draw',
-          geo: item.geo.geo || 'rectangle'
-        }
-      };
-      (editor as unknown as { createShape: (s: typeof shape) => void }).createShape(shape);
-    } else if (item.type === 'text') {
-      const shape = {
-        type: 'text',
-        x: baseX,
-        y: baseY,
-        props: {
-          text: item.text || 'Text',
-          size: 'm'
-        }
-      };
-      (editor as unknown as { createShape: (s: typeof shape) => void }).createShape(shape);
-    } else if (item.type === 'custom' && item.customType && item.props) {
-      // Si es un portero, usar la preferencia de color guardada
-      const props = item.customType === 'goalkeeper' 
-        ? { ...item.props, color: preferredcolor }
-        : item.props;
-      
-      const shape = {
-        type: item.customType,
-        x: baseX,
-        y: baseY,
-        props
-      };
-      (editor as unknown as { createShape: (s: typeof shape) => void }).createShape(shape);
-    }
-  }, [editor, preferredcolor]);
-
-  return (
-    <div className="w-56 border-r bg-white flex flex-col">
-      <div className="p-3 border-b">
-        <h2 className="text-sm font-semibold text-gray-700">{t('editor.elements')}</h2>
-      </div>
-      <div className="flex-1 overflow-y-auto p-2 space-y-2">
-        {PALETTE.map(item => (
-          <button
-            key={item.id}
-            onClick={() => addItem(item)}
-            className="w-full text-left text-black px-3 py-2 text-sm rounded border hover:bg-blue-50 flex justify-between items-center"
-          >
-            <span>{item.labelKey}</span>
-            <span className="text-xs text-gray-400">+</span>
-          </button>
-        ))}
-      </div>
-      <ExportPanel editor={editor} />
     </div>
   );
 }
@@ -421,7 +350,6 @@ function ExportPanel({ editor }: { editor: Editor | null }) {
       const ids = [...editor.getCurrentPageShapeIds()];
       const pixelRatio = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
 
-      // Exportar todo el canvas incluyendo el fondo (que ahora es un shape)
       const { blob } = await editor.toImage(ids, {
         format: 'png',
         background: true,
@@ -455,7 +383,6 @@ function ExportPanel({ editor }: { editor: Editor | null }) {
 
   const clear = () => {
     if (!editor) return;
-    // Borrar todos los shapes excepto el fondo
     const shapes = editor.getCurrentPageShapes();
     const shapesToDelete = shapes.filter(s => s.type !== 'field-background');
     if (shapesToDelete.length > 0) {
@@ -467,7 +394,7 @@ function ExportPanel({ editor }: { editor: Editor | null }) {
     <div className="p-3 border-t space-y-2">
       <h3 className="text-xs font-semibold text-gray-600 uppercase">Export</h3>
       <button onClick={exportPNG} className="w-full text-xs px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-500">{t('editor.exportPng')}</button>
-      <button onClick={exportJSON} className="w-full text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-500">{t('editor.exportJson')}</button>
+      {/*<button onClick={exportJSON} className="w-full text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-500">{t('editor.exportJson')}</button>*/}
       <button onClick={clear} className="w-full text-xs px-2 py-1 bg-red-600 text-white rounded hover:bg-red-500">{t('editor.clearCanvas')}</button>
     </div>
   );
@@ -493,21 +420,98 @@ function RightPanel({
   setPreferredcolor: (color: string) => void;
 }) {
   const t = useTranslations();
-  const [active, setActive] = useState('views');
+  const [active, setActive] = useState<'elements' | 'views' | 'props'>('elements');
+
+  const addItem = useCallback((item: PaletteItem) => {
+    if (!editor) return;
+    const baseX = Math.random() * 200 - (-100);
+    const baseY = Math.random() * 200 - (-100);
+
+    if (item.type === 'geo' && item.geo) {
+      const shape = {
+        type: 'geo',
+        x: baseX,
+        y: baseY,
+        props: {
+          w: item.geo.w,
+          h: item.geo.h,
+          fill: item.geo.fill || '#CCCCCC',
+          dash: item.geo.dash || 'draw',
+          geo: item.geo.geo || 'rectangle'
+        }
+      };
+      (editor as unknown as { createShape: (s: typeof shape) => void }).createShape(shape);
+    } else if (item.type === 'text') {
+      const shape = {
+        type: 'text',
+        x: baseX,
+        y: baseY,
+        props: {
+          text: item.text || 'Text',
+          size: 'm'
+        }
+      };
+      (editor as unknown as { createShape: (s: typeof shape) => void }).createShape(shape);
+    } else if (item.type === 'custom' && item.customType && item.props) {
+      const props = item.customType === 'goalkeeper' 
+        ? { ...item.props, color: preferredcolor }
+        : item.props;
+      const shape = {
+        type: item.customType,
+        x: baseX,
+        y: baseY,
+        props
+      };
+      (editor as unknown as { createShape: (s: typeof shape) => void }).createShape(shape);
+    }
+  }, [editor, preferredcolor]);
+
+  const tabs = [
+    { id: 'elements' as const, label: t('editor.elements') },
+    { id: 'props' as const, label: t('editor.properties') },
+    { id: 'views' as const, label: t('editor.fieldView') },
+    
+  ];
+
   return (
-    <div className="w-60 bg-white flex flex-col text-black">
-      <div className="flex text-xs">
-        <button onClick={() => setActive('views')} className={`flex-1 px-2 py-2 border-b ${active==='views' ? 'bg-gray-100 font-semibold' : ''}`}>{t('editor.fieldView')}</button>
-        <button onClick={() => setActive('props')} className={`flex-1 px-2 py-2 border-b ${active==='props' ? 'bg-gray-100 font-semibold' : ''}`}>{t('editor.properties')}</button>
+    <div className="bg-white border rounded-xl shadow-sm flex flex-col min-h-0 text-black">
+      <div className="flex text-xs border-b">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActive(tab.id)}
+            className={`flex-1 px-3 py-2 transition-colors ${
+              active === tab.id
+                ? 'bg-blue-50 text-blue-700 font-semibold border-b-2 border-blue-600'
+                : 'hover:bg-gray-50 text-gray-700'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
-      <div className="p-3 h-96 overflow-scroll">
+      <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-3">
+        {active === 'elements' && (
+          <div className="space-y-2">
+            {PALETTE.map(item => (
+              <button
+                key={item.id}
+                onClick={() => addItem(item)}
+                className="w-full text-left text-black px-3 py-3 text-sm rounded-lg border hover:border-blue-300 hover:bg-blue-50 transition-colors flex justify-between items-center"
+              >
+                <span>{item.labelKey}</span>
+                <span className="text-xs text-gray-400">+</span>
+              </button>
+            ))}
+          </div>
+        )}
         {active === 'views' && (
           <div className="space-y-2">
             {FIELD_VIEWS.map(v => (
               <button
                 key={v.id}
                 onClick={() => onChangeView(v)}
-                className={`w-full text-left rounded border text-sm overflow-hidden ${v.id === currentView.id ? 'ring-2 ring-blue-500' : ''}`}
+                className={`w-full text-left rounded-lg border text-sm overflow-hidden transition-colors ${v.id === currentView.id ? 'ring-2 ring-blue-500 border-blue-200' : 'hover:border-blue-200'}`}
               >
                 <div
                   className="h-16 w-full"
@@ -530,6 +534,7 @@ function RightPanel({
           />
         )}
       </div>
+      <ExportPanel editor={editor} />
     </div>
   );
 }
@@ -545,8 +550,6 @@ function ShapeProperties({
 }) {
   const t = useTranslations();
   const [, forceUpdate] = useState({});
-  
-  // Forzar re-render cuando cambia la selección
   useEffect(() => {
     if (!editor) return;
     const handleSelectionChange = () => {
@@ -570,14 +573,11 @@ function ShapeProperties({
   const updateColor = (color: string) => {
     if (!editor) return;
     shapes.forEach(shape => {
-      // Solo aplicar color a shapes que lo soporten
       if (shape.type === 'geo') {
         editor.updateShape({ ...shape, props: { ...shape.props, fill: color } });
       } else if (shape.type === 'goalkeeper') {
-        // Los porteros no usan la propiedad 'color', ignoran este cambio
         return;
       }
-      // Ignorar text, draw y otros shapes nativos de Tldraw
     });
   };
 
@@ -591,14 +591,12 @@ function ShapeProperties({
   const updateScale = (scale: number) => {
     if (!editor) return;
     shapes.forEach(shape => {
-      // Solo aplicar escala a shapes personalizados que tienen w y h
       if (shape.type === 'goalkeeper' || shape.type === 'geo') {
         const props = shape.props as unknown as { w?: number; h?: number };
         const w = props.w ?? 40;
         const h = props.h ?? 40;
         editor.updateShape({ ...shape, props: { ...shape.props, w: Math.max(10, w * scale), h: Math.max(10, h * scale) } });
       }
-      // Ignorar text, draw y otros shapes nativos que no tienen estas props
     });
   };
 
@@ -611,7 +609,6 @@ function ShapeProperties({
         props: { ...shape.props, [prop]: value }
       });
     });
-    // Si es un portero y cambiamos el color de uniforme, guardar la preferencia
     if (first.type === 'goalkeeper' && prop === 'color' && typeof value === 'string') {
       setPreferredcolor(value);
     }
@@ -621,18 +618,15 @@ function ShapeProperties({
     <div className="space-y-3 text-xs">
       <div>
         <p className="font-semibold mb-1">{t('editor.properties')} ({selectionCount})</p>
-        
-        {/* Controles especificos para portero */}
         {first.type === 'goalkeeper' && (() => {
           const props = first.props as unknown as { rotation?: number; color?: string };
           const currentRotation = props.rotation ?? 0;
           const currentColor = props.color ?? 'default';
-          
           return (
             <div className="space-y-2 mt-2">
               <p className="text-gray-600 font-semibold">Portero</p>
               <div>
-                <p className="text-gray-500 text-[11px] mb-1">Rotación</p>
+                <p className="text-gray-500 text-[11px] mb-1">Rotacion</p>
                 <div className="grid grid-cols-4 gap-1">
                   {[0, 1, 2, 3, 4, 5, 6, 7].map(rot => {
                     const isSelected = currentRotation === rot;
@@ -677,18 +671,12 @@ function ShapeProperties({
           );
         })()}
 
-        {/* Controles generales para otros shapes */}
         {first.type !== 'goalkeeper' && (
-          <>                        
-            {/* Control de rotación para todos excepto text y draw */}            
-              <div className="space-y-1">
-                <p className="text-gray-600">Rotacion (deg)</p>
-                <input type="range" min={0} max={360} defaultValue={0} onChange={e => updateRotation(Number(e.target.value))} />
-              </div>                                                             
-          </>
+          <div className="space-y-1">
+            <p className="text-gray-600">Rotacion (deg)</p>
+            <input type="range" min={0} max={360} defaultValue={0} onChange={e => updateRotation(Number(e.target.value))} />
+          </div>
         )}
-        
-       
       </div>
     </div>
   );
