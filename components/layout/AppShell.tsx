@@ -41,14 +41,13 @@ export function AppShell({
     <div className="min-h-screen flex bg-gray-50">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 w-52 bg-white border-r border-gray-200 shadow-sm z-40 transform transition-transform duration-200 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 w-40 bg-white border-r border-gray-200 shadow-sm z-40 transform transition-transform duration-200 lg:translate-x-0 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="h-16 px-4 flex items-center border-b border-gray-100">
           <div className="flex flex-col">
-            <span className="text-lg font-semibold text-gray-900">Goalkeeper Pro</span>
-            <span className="text-xs text-gray-500">Entrenamiento integral</span>
+            <span className="text-lg font-semibold text-gray-900">Goalkeeper Pro</span>            
           </div>
         </div>
 
@@ -101,7 +100,7 @@ export function AppShell({
       )}
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col min-h-screen lg:ml-52">
+      <div className="flex-1 flex flex-col min-h-screen lg:ml-36">
         <header className="sticky top-0 z-20 bg-white border-b border-gray-200">
           <div className="px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4">
             <button

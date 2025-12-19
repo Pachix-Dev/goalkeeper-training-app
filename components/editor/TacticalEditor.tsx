@@ -254,30 +254,33 @@ export default function TacticalEditor({ designId, onDesignSaved }: TacticalEdit
   ], []);
 
   return (
-    <div className="flex flex-col gap-4 h-[calc(100vh-140px)]">
-      <div className="bg-white border rounded-xl shadow-sm px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-        <div className="min-w-[220px]">
-          <p className="text-lg font-semibold text-gray-900">{t('editor.title')}</p>
-          <p className="text-sm text-gray-500">{t('editor.subtitle')}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <input
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            placeholder={t('editor.titlePlaceholder')}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-64 sm:w-72 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-          <button
-            disabled={!title || saving}
-            onClick={saveDesign}
-            className="px-4 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:bg-blue-700 transition-colors"
-          >
-            {saving ? t('editor.saving') : currentDesignId ? t('editor.update') : t('editor.save')}
-          </button>
-        </div>
+    <div className="flex flex-col gap-4 h-[calc(100vh-120px)]">
+      <div className="bg-white border rounded-xl shadow-sm p-4 flex  gap-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-[220px]">
+              <p className="text-lg font-semibold text-gray-900">{t('editor.title')}</p>
+              <p className="text-sm text-gray-500">{t('editor.subtitle')}</p>
+            </div>
+           </div>  
+           <div className="flex flex-1 flex-row justify-center md:items-center gap-2">
+            <input
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              placeholder={t('editor.titlePlaceholder')}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full md:max-w-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <button
+              disabled={!title || saving}
+              onClick={saveDesign}
+              className="px-4 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:bg-blue-700 transition-colors"
+            >
+              {saving ? t('editor.saving') : currentDesignId ? t('editor.update') : t('editor.save')}
+            </button>
+          </div>   
+          <ExportPanel editor={editor} variant="inline" />                    
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-4 flex-1 min-h-0">
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_250px] gap-4 flex-1 min-h-0">
         <div className="bg-white border rounded-xl shadow-sm flex flex-col min-h-0">
           
           <div className="flex-1 min-h-0">
@@ -286,8 +289,7 @@ export default function TacticalEditor({ designId, onDesignSaved }: TacticalEdit
                 autoFocus
                 persistenceKey="tactical-editor-v3"
                 shapeUtils={customShapeUtils}
-                onMount={setEditor}
-                style={{ height: '100%', width: '100%' }}
+                onMount={setEditor}                
               />
             </div>
           </div>        
@@ -341,8 +343,9 @@ export default function TacticalEditor({ designId, onDesignSaved }: TacticalEdit
   );
 }
 
-function ExportPanel({ editor }: { editor: Editor | null }) {
+function ExportPanel({ editor, variant = 'stacked' }: { editor: Editor | null; variant?: 'inline' | 'stacked' }) {
   const t = useTranslations();
+  const isInline = variant === 'inline';
 
   const exportPNG = async () => {
     try {
@@ -391,11 +394,26 @@ function ExportPanel({ editor }: { editor: Editor | null }) {
   };
 
   return (
-    <div className="p-3 border-t space-y-2">
-      <h3 className="text-xs font-semibold text-gray-600 uppercase">Export</h3>
-      <button onClick={exportPNG} className="w-full text-xs px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-500">{t('editor.exportPng')}</button>
-      {/*<button onClick={exportJSON} className="w-full text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-500">{t('editor.exportJson')}</button>*/}
-      <button onClick={clear} className="w-full text-xs px-2 py-1 bg-red-600 text-white rounded hover:bg-red-500">{t('editor.clearCanvas')}</button>
+    <div className={isInline ? "flex items-center gap-2" : "p-3 border-t space-y-2"}>
+      {!isInline && <h3 className="text-xs font-semibold text-gray-600 uppercase">Export</h3>}
+      <button
+        onClick={exportPNG}
+        className={`${isInline ? 'inline-flex items-center gap-1 px-3 py-2 text-xs font-semibold rounded-lg bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-colors' : 'w-full text-xs px-2 py-2 bg-blue-600 text-white rounded hover:bg-blue-500'}`}
+      >
+        {t('editor.exportPng')}
+      </button>
+      {/*<button
+        onClick={exportJSON}
+        className={`${isInline ? 'inline-flex items-center gap-1 px-3 py-2 text-xs font-semibold rounded-lg bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 transition-colors' : 'w-full text-xs px-2 py-2 bg-green-600 text-white rounded hover:bg-green-500'}`}
+      >
+        {t('editor.exportJson')}
+      </button>*/}
+      <button
+        onClick={clear}
+        className={`${isInline ? 'inline-flex items-center gap-1 px-3 py-2 text-xs font-semibold rounded-lg bg-red-600 text-white shadow-sm hover:bg-red-700 transition-colors' : 'w-full text-xs px-2 py-2 bg-red-600 text-white rounded hover:bg-red-500'}`}
+      >
+        {t('editor.clearCanvas')}
+      </button>
     </div>
   );
 }
@@ -534,7 +552,7 @@ function RightPanel({
           />
         )}
       </div>
-      <ExportPanel editor={editor} />
+      
     </div>
   );
 }
