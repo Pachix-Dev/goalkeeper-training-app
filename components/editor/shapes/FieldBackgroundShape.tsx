@@ -75,7 +75,7 @@ export class FieldBackgroundShapeUtil extends BaseBoxShapeUtil<FieldBackgroundSh
             height: '659px',
             backgroundColor: backgroundColor && backgroundColor !== '' ? backgroundColor : '#6ba04d',
             backgroundImage: backgroundType === 'image' && backgroundImage && backgroundImage !== '' ? `url(${backgroundImage})` : 'none',
-            backgroundSize: 'contain',
+            backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             userSelect: 'none',
