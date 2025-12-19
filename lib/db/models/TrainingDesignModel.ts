@@ -25,15 +25,20 @@ export class TrainingDesignModel {
     return { ...row, data: parsedData } as TrainingDesign;
   }
 
-  static async listByUser(userId: number, limit = 50): Promise<TrainingDesign[]> {     
-  const parsedLimit = Number(limit);
-  const safeLimit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : 50;
+  static async listByUser(userId: number, limit = 50): Promise<TrainingDesign[]> {
+    const userIdNum = Number(userId);
+    if (!Number.isFinite(userIdNum)) {
+      throw new Error('Invalid user id');
+    }
 
-  const rows = await query<Array<TrainingDesign & { data: string }>>(
-    `SELECT id, user_id, title, locale, data, img, training_session_id, created_at, updated_at
-     FROM training_designs WHERE user_id = ? ORDER BY updated_at DESC LIMIT ${safeLimit}`,
-    [userIdNum]
-  );
+    const parsedLimit = Number(limit);
+    const safeLimit = Number.isFinite(parsedLimit) && parsedLimit > 0 ? parsedLimit : 50;
+
+    const rows = await query<Array<TrainingDesign & { data: string }>>(
+      `SELECT id, user_id, title, locale, data, img, training_session_id, created_at, updated_at
+       FROM training_designs WHERE user_id = ? ORDER BY updated_at DESC LIMIT ${safeLimit}`,
+      [userIdNum]
+    );
     if (!rows || !Array.isArray(rows)) return [];
     return rows.map(r => {
       const parsedData = typeof r.data === 'string' ? safeParse(r.data) : r.data;
