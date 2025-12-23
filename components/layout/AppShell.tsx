@@ -74,7 +74,7 @@ export function AppShell({
           ))}
         </nav>
 
-        <div className="px-4 py-3 border-t border-gray-100 space-y-2">
+        <div className="px-4 border-t border-gray-100 space-y-2">
           <LanguageSwitcher />
           {onLogout && (
             <Button
@@ -100,7 +100,7 @@ export function AppShell({
       )}
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col min-h-screen lg:ml-36">
+      <div className="flex-1 flex flex-col min-h-screen lg:ml-40">
         <header className="sticky top-0 z-20 bg-white border-b border-gray-200">
           <div className="px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-4">
             <button
@@ -115,7 +115,7 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6">{children}</main>
+        <main className="flex-1 container mx-auto px-4 lg:px-8 py-8">{children}</main>
       </div>
     </div>
   );

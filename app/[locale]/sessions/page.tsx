@@ -101,95 +101,93 @@ export default function SessionsPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-          <p className="text-gray-600 mt-2">{t('subtitle')}</p>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-            <select
-              value={selectedTeam}
-              onChange={(e) => setSelectedTeam(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">{t('allTeams')}</option>
-              {teams.map((team) => (
-                <option key={team.id} value={team.id}>
-                  {team.name}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">{t('allTypes')}</option>
-              {types.map((type) => (
-                <option key={type} value={type}>
-                  {t(type as any)}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">{t('allStatuses')}</option>
-              {statuses.map((status) => (
-                <option key={status} value={status}>
-                  {t(status as any)}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value as any)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">Todas las fechas</option>
-              <option value="upcoming">{t('upcomingSessions')}</option>
-              <option value="past">{t('pastSessions')}</option>
-            </select>
-          </div>
-
-          <div className="flex justify-end">
-            <Button onClick={() => router.push(`/${locale}/sessions/new`)}>
-              + {t('createSession')}
-            </Button>
-          </div>
-        </div>
-
-        {/* Sessions Grid */}
-        {loading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">Cargando...</p>
-          </div>
-        ) : sessions.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <p className="text-gray-600 mb-2">{t('noSessions')}</p>
-            <p className="text-sm text-gray-500 mb-6">{t('noSessionsDescription')}</p>
-            <Button onClick={() => router.push(`/${locale}/sessions/new`)}>
-              + {t('createSession')}
-            </Button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sessions.map((session) => (
-              <SessionCard key={session.id} session={session} onDelete={handleDelete} />
-            ))}
-          </div>
-        )}
+  return (    
+    <div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+        <p className="text-gray-600 mt-2">{t('subtitle')}</p>
       </div>
-    </div>
+
+      {/* Filters */}
+      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <select
+            value={selectedTeam}
+            onChange={(e) => setSelectedTeam(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">{t('allTeams')}</option>
+            {teams.map((team) => (
+              <option key={team.id} value={team.id}>
+                {team.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={selectedType}
+            onChange={(e) => setSelectedType(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">{t('allTypes')}</option>
+            {types.map((type) => (
+              <option key={type} value={type}>
+                {t(type as any)}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">{t('allStatuses')}</option>
+            {statuses.map((status) => (
+              <option key={status} value={status}>
+                {t(status as any)}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value as any)}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">Todas las fechas</option>
+            <option value="upcoming">{t('upcomingSessions')}</option>
+            <option value="past">{t('pastSessions')}</option>
+          </select>
+        </div>
+
+        <div className="flex justify-end">
+          <Button onClick={() => router.push(`/${locale}/sessions/new`)}>
+            + {t('createSession')}
+          </Button>
+        </div>
+      </div>
+
+      {/* Sessions Grid */}
+      {loading ? (
+        <div className="text-center py-12">
+          <p className="text-gray-600">Cargando...</p>
+        </div>
+      ) : sessions.length === 0 ? (
+        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+          <p className="text-gray-600 mb-2">{t('noSessions')}</p>
+          <p className="text-sm text-gray-500 mb-6">{t('noSessionsDescription')}</p>
+          <Button onClick={() => router.push(`/${locale}/sessions/new`)}>
+            + {t('createSession')}
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {sessions.map((session) => (
+            <SessionCard key={session.id} session={session} onDelete={handleDelete} />
+          ))}
+        </div>
+      )}
+    </div>    
   );
 }

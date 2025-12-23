@@ -98,12 +98,10 @@ export function DiagramGallery({ tasks }: DiagramGalleryProps) {
                 #{task.order_number} - {task.task_title || 'Sin título'}
               </h3>
               <div className="relative w-full" style={{ height: '500px' }}>
-                <Image
+                <img
                   src={`/api/designs/${task.design_img}`}
-                  alt={task.task_title || 'Diagrama táctico'}
-                  fill
-                  className="object-contain border rounded"
-                  sizes="100vw"
+                  alt={task.task_title || 'Diagrama táctico'}                  
+                  className="object-contain border rounded"                  
                 />
               </div>
             </div>

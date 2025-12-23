@@ -113,94 +113,92 @@ export default function GoalkeeperAttendancePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Button
-          variant="outline"
-          onClick={() => router.push(`/${locale}/goalkeepers/${goalkeeperId}`)}
-          className="mb-4"
-        >
-          ← Volver
-        </Button>
+    <div>
+      <Button
+        variant="outline"
+        onClick={() => router.push(`/${locale}/goalkeepers/${goalkeeperId}`)}
+        className="mb-4"
+      >
+        ← Volver
+      </Button>
 
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">{t('attendanceHistory')}</h1>
-          <p className="text-gray-600 mt-2">
-            {goalkeeper.first_name} {goalkeeper.last_name}
-          </p>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">{t('attendanceHistory')}</h1>
+        <p className="text-gray-600 mt-2">
+          {goalkeeper.first_name} {goalkeeper.last_name}
+        </p>
+      </div>
+
+      {/* Estadísticas */}
+      {stats && (
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
+          <Card className="text-center p-4">
+            <p className="text-2xl font-bold text-gray-900">{stats.total_sessions}</p>
+            <p className="text-xs text-gray-600">{t('totalSessions')}</p>
+          </Card>
+          <Card className="text-center p-4">
+            <p className="text-2xl font-bold text-green-600">{stats.present_count}</p>
+            <p className="text-xs text-gray-600">{t('presentCount')}</p>
+          </Card>
+          <Card className="text-center p-4">
+            <p className="text-2xl font-bold text-red-600">{stats.absent_count}</p>
+            <p className="text-xs text-gray-600">{t('absentCount')}</p>
+          </Card>
+          <Card className="text-center p-4">
+            <p className="text-2xl font-bold text-yellow-600">{stats.late_count}</p>
+            <p className="text-xs text-gray-600">{t('lateCount')}</p>
+          </Card>
+          <Card className="text-center p-4">
+            <p className="text-2xl font-bold text-orange-600">{stats.injured_count}</p>
+            <p className="text-xs text-gray-600">{t('injuredCount')}</p>
+          </Card>
+          <Card className="text-center p-4">
+            <p className="text-2xl font-bold text-blue-600">{stats.excused_count}</p>
+            <p className="text-xs text-gray-600">{t('excusedCount')}</p>
+          </Card>
+          <Card className="text-center p-4">
+            <p className="text-2xl font-bold text-purple-600">{stats.attendance_rate}%</p>
+            <p className="text-xs text-gray-600">{t('attendanceRate')}</p>
+          </Card>
         </div>
+      )}
 
-        {/* Estadísticas */}
-        {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
-            <Card className="text-center p-4">
-              <p className="text-2xl font-bold text-gray-900">{stats.total_sessions}</p>
-              <p className="text-xs text-gray-600">{t('totalSessions')}</p>
-            </Card>
-            <Card className="text-center p-4">
-              <p className="text-2xl font-bold text-green-600">{stats.present_count}</p>
-              <p className="text-xs text-gray-600">{t('presentCount')}</p>
-            </Card>
-            <Card className="text-center p-4">
-              <p className="text-2xl font-bold text-red-600">{stats.absent_count}</p>
-              <p className="text-xs text-gray-600">{t('absentCount')}</p>
-            </Card>
-            <Card className="text-center p-4">
-              <p className="text-2xl font-bold text-yellow-600">{stats.late_count}</p>
-              <p className="text-xs text-gray-600">{t('lateCount')}</p>
-            </Card>
-            <Card className="text-center p-4">
-              <p className="text-2xl font-bold text-orange-600">{stats.injured_count}</p>
-              <p className="text-xs text-gray-600">{t('injuredCount')}</p>
-            </Card>
-            <Card className="text-center p-4">
-              <p className="text-2xl font-bold text-blue-600">{stats.excused_count}</p>
-              <p className="text-xs text-gray-600">{t('excusedCount')}</p>
-            </Card>
-            <Card className="text-center p-4">
-              <p className="text-2xl font-bold text-purple-600">{stats.attendance_rate}%</p>
-              <p className="text-xs text-gray-600">{t('attendanceRate')}</p>
-            </Card>
+      {/* Historial */}
+      <Card>
+        <h2 className="text-xl font-semibold mb-4">Historial</h2>
+        {attendances.length === 0 ? (
+          <p className="text-center text-gray-500 py-8">{t('noAttendance')}</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('date')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('session')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('status')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('notes')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {attendances.map((att) => (
+                  <tr key={att.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm text-gray-900">
+                      {att.session_date && formatDate(att.session_date)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{att.session_title}</td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(att.status)}`}>
+                        {t(att.status as any)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{att.notes || '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
-
-        {/* Historial */}
-        <Card>
-          <h2 className="text-xl font-semibold mb-4">Historial</h2>
-          {attendances.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">{t('noAttendance')}</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('date')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('session')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('status')}</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('notes')}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {attendances.map((att) => (
-                    <tr key={att.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {att.session_date && formatDate(att.session_date)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">{att.session_title}</td>
-                      <td className="px-4 py-3">
-                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(att.status)}`}>
-                          {t(att.status as any)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{att.notes || '-'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
-      </div>
-    </div>
+      </Card>
+    </div>    
   );
 }

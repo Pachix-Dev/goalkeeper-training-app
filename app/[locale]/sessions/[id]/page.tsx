@@ -138,9 +138,8 @@ export default function SessionDetailPage() {
     return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+  return (    
+    <div>
         <Button variant="outline" onClick={() => router.push(`/${locale}/sessions`)} className="mb-4">
           ← Volver
         </Button>
@@ -284,7 +283,6 @@ export default function SessionDetailPage() {
             )}
           </div>
         </Card>
-      </div>
-    </div>
+    </div>    
   );
 }

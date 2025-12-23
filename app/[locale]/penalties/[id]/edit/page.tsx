@@ -180,8 +180,8 @@ export default function EditPenaltyPage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto">
+    
+      <div >
         {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex justify-between items-center">
@@ -398,6 +398,6 @@ export default function EditPenaltyPage({
           </div>
         </form>
       </div>
-    </div>
+   
   );
 }

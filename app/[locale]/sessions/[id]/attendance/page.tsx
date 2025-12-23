@@ -159,116 +159,114 @@ export default function SessionAttendancePage() {
     return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+  return (    
+    <div>
+      <Button
+        variant="outline"
+        onClick={() => router.push(`/${locale}/sessions/${sessionId}`)}
+        className="mb-4"
+      >
+        ← Volver
+      </Button>
+
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">{t('takeAttendance')}</h1>
+        <p className="text-gray-600 mt-2">
+          {session.title} - {formatDate(session.session_date)}
+        </p>
+      </div>
+
+      <Card className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold">{t('quickActions')}</h2>
+          <Button onClick={markAllPresent} variant="outline">
+            {t('markAllPresent')}
+          </Button>
+        </div>
+      </Card>
+
+      <div className="space-y-3">
+        {goalkeepers.map((goalkeeper) => {
+          const attendance = attendances.get(goalkeeper.id);
+          if (!attendance) return null;
+
+          return (
+            <Card key={goalkeeper.id} className={`border-l-4 ${statusColors[attendance.status]}`}>
+              <div className="flex items-center gap-4">
+                {/* Foto */}
+                <div className="w-16 h-16 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden">
+                  {goalkeeper.photo_url ? (
+                    <img
+                      src={goalkeeper.photo_url}
+                      alt={`${goalkeeper.first_name} ${goalkeeper.last_name}`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+
+                {/* Nombre */}
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {goalkeeper.first_name} {goalkeeper.last_name}
+                    {goalkeeper.jersey_number && (
+                      <span className="ml-2 text-gray-500">#{goalkeeper.jersey_number}</span>
+                    )}
+                  </h3>
+                </div>
+
+                {/* Estado */}
+                <div className="w-40">
+                  <select
+                    value={attendance.status}
+                    onChange={(e) => updateAttendance(goalkeeper.id, 'status', e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="present">{t('present')}</option>
+                    <option value="absent">{t('absent')}</option>
+                    <option value="late">{t('late')}</option>
+                    <option value="injured">{t('injured')}</option>
+                    <option value="excused">{t('excused')}</option>
+                  </select>
+                </div>
+
+                {/* Notas */}
+                <div className="w-64">
+                  <input
+                    type="text"
+                    value={attendance.notes}
+                    onChange={(e) => updateAttendance(goalkeeper.id, 'notes', e.target.value)}
+                    placeholder={t('notesPlaceholder')}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+
+      <div className="mt-6 flex gap-4">
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          className="flex-1"
+        >
+          {saving ? 'Guardando...' : t('saveAttendance')}
+        </Button>
         <Button
           variant="outline"
           onClick={() => router.push(`/${locale}/sessions/${sessionId}`)}
-          className="mb-4"
+          disabled={saving}
         >
-          ← Volver
+          Cancelar
         </Button>
-
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">{t('takeAttendance')}</h1>
-          <p className="text-gray-600 mt-2">
-            {session.title} - {formatDate(session.session_date)}
-          </p>
-        </div>
-
-        <Card className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">{t('quickActions')}</h2>
-            <Button onClick={markAllPresent} variant="outline">
-              {t('markAllPresent')}
-            </Button>
-          </div>
-        </Card>
-
-        <div className="space-y-3">
-          {goalkeepers.map((goalkeeper) => {
-            const attendance = attendances.get(goalkeeper.id);
-            if (!attendance) return null;
-
-            return (
-              <Card key={goalkeeper.id} className={`border-l-4 ${statusColors[attendance.status]}`}>
-                <div className="flex items-center gap-4">
-                  {/* Foto */}
-                  <div className="w-16 h-16 rounded-full bg-gray-200 flex-shrink-0 overflow-hidden">
-                    {goalkeeper.photo_url ? (
-                      <img
-                        src={goalkeeper.photo_url}
-                        alt={`${goalkeeper.first_name} ${goalkeeper.last_name}`}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Nombre */}
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {goalkeeper.first_name} {goalkeeper.last_name}
-                      {goalkeeper.jersey_number && (
-                        <span className="ml-2 text-gray-500">#{goalkeeper.jersey_number}</span>
-                      )}
-                    </h3>
-                  </div>
-
-                  {/* Estado */}
-                  <div className="w-40">
-                    <select
-                      value={attendance.status}
-                      onChange={(e) => updateAttendance(goalkeeper.id, 'status', e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="present">{t('present')}</option>
-                      <option value="absent">{t('absent')}</option>
-                      <option value="late">{t('late')}</option>
-                      <option value="injured">{t('injured')}</option>
-                      <option value="excused">{t('excused')}</option>
-                    </select>
-                  </div>
-
-                  {/* Notas */}
-                  <div className="w-64">
-                    <input
-                      type="text"
-                      value={attendance.notes}
-                      onChange={(e) => updateAttendance(goalkeeper.id, 'notes', e.target.value)}
-                      placeholder={t('notesPlaceholder')}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-
-        <div className="mt-6 flex gap-4">
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex-1"
-          >
-            {saving ? 'Guardando...' : t('saveAttendance')}
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => router.push(`/${locale}/sessions/${sessionId}`)}
-            disabled={saving}
-          >
-            Cancelar
-          </Button>
-        </div>
       </div>
-    </div>
+    </div>    
   );
 }
