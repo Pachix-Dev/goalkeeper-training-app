@@ -115,7 +115,7 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="flex-1 container mx-auto px-4 lg:px-8 py-8">{children}</main>
+        <main className="flex-1 container mx-auto px-4 lg:px-8 py-4">{children}</main>
       </div>
     </div>
   );

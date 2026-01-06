@@ -433,13 +433,30 @@
     "layers": "Layers",
     "properties": "Properties",
     "fieldView": "Field view",
-    "save": "Save design",
+    "save": "Save",
     "update": "Update design",
     "myDesigns": "My designs",
     "load": "Load",
     "delete": "Delete",
     "titlePlaceholder": "Design title",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "selectField": "Select field",
+    "goalkeeper": "Goalkeeper",
+    "addGoalkeeper": "Add goalkeeper",
+    "uniformColor": "Uniform color",
+    "direction": "Direction",
+    "ball": "Ball",
+    "addBall": "Add ball",
+    "linkToTask": "Link to task",
+    "taskLinked": "Linked to task #{id}",
+    "selectTask": "Select task",
+    "searchTasks": "Search tasks...",
+    "noTasksFound": "No tasks found",
+    "loading": "Loading...",
+    "saveDesign": "Save design",
+    "designTitle": "Design title",
+    "enterDesignTitle": "Enter design title",
+    "cancel": "Cancel"
   },
   "landing": {
     "hero": {
@@ -780,5 +797,126 @@
       "avgGoalsPerMatch": "Average goals/match",
       "avgCleanSheetPercentage": "Average % clean sheets"
     }
+  },
+  "pricing": {
+    "title": "Choose your plan",
+    "subtitle": "Pick the plan that best fits your training needs",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "savePercent": "Save up to 17%",
+    "perMonth": "/month",
+    "perYear": "/year",
+    "billedYearly": "billed yearly",
+    "save": "Save",
+    "popular": "Most popular",
+    "currentPlan": "Your current plan",
+    "getStarted": "Get started free",
+    "subscribe": "Subscribe",
+    "managePlan": "Manage plan",
+    "free": {
+      "name": "Free",
+      "description": "Free plan to get started"
+    },
+    "pro": {
+      "name": "Pro",
+      "description": "Everything you need to train professionally"
+    },
+    "elite": {
+      "name": "Elite",
+      "description": "For professional clubs and academies"
+    },
+    "features": {
+      "teams": "teams",
+      "goalkeepers": "goalkeepers",
+      "tasks": "custom tasks",
+      "sessions": "sessions/month",
+      "unlimited": "Unlimited",
+      "tacticalEditor": "Full tactical editor",
+      "statistics": "Advanced statistics",
+      "matchAnalysis": "Match analysis",
+      "penaltyTracking": "Penalty tracking",
+      "exportPdf": "Export to PDF",
+      "prioritySupport": "Priority support",
+      "apiAccess": "API access",
+      "onboarding": "Personalized onboarding"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "changePlan": {
+        "question": "Can I change plans at any time?",
+        "answer": "Yes, you can upgrade or downgrade your plan at any time. Changes will be applied immediately and prorated."
+      },
+      "paymentMethods": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept all major credit and debit cards (Visa, Mastercard, American Express)."
+      },
+      "trial": {
+        "question": "Is there a free trial?",
+        "answer": "Yes, the Pro plan includes a 7-day free trial. You won't be charged until the trial period ends."
+      },
+      "cancel": {
+        "question": "Can I cancel my subscription?",
+        "answer": "You can cancel your subscription at any time. You'll continue to have access until the end of the billing period."
+      }
+    }
+  },
+  "billing": {
+    "title": "Billing & Subscription",
+    "subtitle": "Manage your plan and payment methods",
+    "freePlan": "Free Plan",
+    "freePlanDesc": "You are currently on the free plan",
+    "upgrade": "Upgrade plan",
+    "manageBilling": "Manage billing",
+    "cancelSubscription": "Cancel subscription",
+    "reactivate": "Reactivate subscription",
+    "confirmCancel": "Are you sure you want to cancel your subscription? You will continue to have access until the end of the current period.",
+    "paymentSuccess": "Payment successful! Your subscription is now active.",
+    "status": {
+      "active": "Active",
+      "trialing": "Trial period",
+      "past_due": "Payment due",
+      "cancelled": "Cancelled",
+      "inactive": "Inactive"
+    },
+    "renewsOn": "Renews on",
+    "endsOn": "Ends on",
+    "trialEndsOn": "Trial ends on",
+    "willCancel": "Will cancel at end of period",
+    "updatePayment": "Update payment method",
+    "usage": {
+      "title": "Plan usage",
+      "teams": "Teams",
+      "goalkeepers": "Goalkeepers",
+      "tasks": "Tasks",
+      "sessions": "Sessions this month",
+      "unlimited": "Unlimited",
+      "of": "of",
+      "limitReached": "You've reached your plan limit"
+    },
+    "features": {
+      "title": "Your plan features",
+      "included": "Included",
+      "notIncluded": "Not included"
+    },
+    "invoices": {
+      "title": "Invoice history",
+      "noInvoices": "No invoices available",
+      "date": "Date",
+      "amount": "Amount",
+      "status": "Status",
+      "actions": "Actions",
+      "view": "View",
+      "download": "Download",
+      "paid": "Paid",
+      "open": "Open",
+      "void": "Void"
+    }
+  },
+  "subscription": {
+    "upgradeRequired": "Upgrade required",
+    "upgradeMessage": "This feature requires a higher plan",
+    "limitReached": "Plan limit reached",
+    "limitMessage": "To create more {resource}, upgrade to a higher plan",
+    "viewPlans": "View plans"
   }
 }

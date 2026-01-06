@@ -4,27 +4,41 @@ import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
 export interface AuthUser {
-  id: number;
+  id: string;
   email: string;
   name: string;
   role: 'admin' | 'coach' | 'assistant';
 }
 
-export async function authenticateRequest(request: NextRequest): Promise<AuthUser | null> {
+interface VerifyTokenResult {
+  success: boolean;
+  user?: AuthUser;
+  error?: string;
+}
+
+/**
+ * Verifica el token JWT de una request
+ */
+export async function verifyToken(request: NextRequest): Promise<VerifyTokenResult> {
   try {
     const authHeader = request.headers.get('authorization');
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return null;
+      return { success: false, error: 'Token no proporcionado' };
     }
 
     const token = authHeader.substring(7);
     const decoded = jwt.verify(token, JWT_SECRET) as AuthUser;
     
-    return decoded;
-  } catch {
-    return null;
+    return { success: true, user: decoded };
+  } catch (error) {
+    return { success: false, error: 'Token inválido' };
   }
+}
+
+export async function authenticateRequest(request: NextRequest): Promise<AuthUser | null> {
+  const result = await verifyToken(request);
+  return result.success ? result.user! : null;
 }
 
 export function requireAuth<T = any>(

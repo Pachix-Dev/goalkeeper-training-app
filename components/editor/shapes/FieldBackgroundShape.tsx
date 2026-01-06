@@ -58,6 +58,9 @@ export class FieldBackgroundShapeUtil extends BaseBoxShapeUtil<FieldBackgroundSh
   component(shape: FieldBackgroundShape) {
     const { w, h, backgroundType, backgroundColor, backgroundImage } = shape.props;
 
+    // Usar key para forzar re-render cuando cambie la imagen
+    const bgKey = `${backgroundType}-${backgroundImage}-${backgroundColor}`;
+
     return (
       <HTMLContainer
         id={shape.id}
@@ -70,11 +73,12 @@ export class FieldBackgroundShapeUtil extends BaseBoxShapeUtil<FieldBackgroundSh
         }}
       >
         <div
+          key={bgKey}
           style={{
-            width: '1300px',
-            height: '659px',
-            backgroundColor: backgroundColor && backgroundColor !== '' ? backgroundColor : '#6ba04d',
-            backgroundImage: backgroundType === 'image' && backgroundImage && backgroundImage !== '' ? `url(${backgroundImage})` : 'none',
+            width: '100%',
+            height: '100%',
+            backgroundColor: backgroundColor || '#6ba04d',
+            backgroundImage: backgroundType === 'image' && backgroundImage ? `url(${backgroundImage})` : 'none',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',

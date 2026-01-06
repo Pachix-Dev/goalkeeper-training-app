@@ -54,7 +54,7 @@
     "dashboard": "Dashboard",
     "teams": "Equipos",
     "goalkeepers": "Porteros",
-    "planning": "Planificación",
+    "planning": "Editor express",
     "sessions": "Sesiones",
     "tasks": "Tareas",
     "statistics": "Estadísticas",
@@ -432,13 +432,30 @@
     "layers": "Capas",
     "properties": "Propiedades",
     "fieldView": "Vista de cancha",
-    "save": "Guardar diseño",
+    "save": "Guardar",
     "update": "Actualizar diseño",
     "myDesigns": "Mis diseños",
     "load": "Cargar",
     "delete": "Eliminar",
     "titlePlaceholder": "Título del diseño",
-    "saving": "Guardando..."    
+    "saving": "Guardando...",
+    "selectField": "Seleccionar cancha",
+    "goalkeeper": "Portero",
+    "addGoalkeeper": "Agregar portero",
+    "uniformColor": "Color de uniforme",
+    "direction": "Dirección",
+    "ball": "Balón",
+    "addBall": "Agregar balón",
+    "linkToTask": "Vincular a tarea",
+    "taskLinked": "Vinculado a tarea #{id}",
+    "selectTask": "Seleccionar tarea",
+    "searchTasks": "Buscar tareas...",
+    "noTasksFound": "No se encontraron tareas",
+    "loading": "Cargando...",
+    "saveDesign": "Guardar diseño",
+    "designTitle": "Título del diseño",
+    "enterDesignTitle": "Ingrese el título del diseño",
+    "cancel": "Cancelar"
   },
   "landing": {
     "hero": {
@@ -779,5 +796,126 @@
       "avgGoalsPerMatch": "Promedio goles/partido",
       "avgCleanSheetPercentage": "% Promedio portería a cero"
     }
+  },
+  "pricing": {
+    "title": "Elige tu plan",
+    "subtitle": "Escoge el plan que mejor se adapte a tus necesidades de entrenamiento",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "savePercent": "Ahorra hasta 17%",
+    "perMonth": "/mes",
+    "perYear": "/año",
+    "billedYearly": "facturado anualmente",
+    "save": "Ahorra",
+    "popular": "Más popular",
+    "currentPlan": "Tu plan actual",
+    "getStarted": "Comenzar gratis",
+    "subscribe": "Suscribirse",
+    "managePlan": "Gestionar plan",
+    "free": {
+      "name": "Free",
+      "description": "Plan gratuito para comenzar"
+    },
+    "pro": {
+      "name": "Pro",
+      "description": "Todo lo que necesitas para entrenar profesionalmente"
+    },
+    "elite": {
+      "name": "Elite",
+      "description": "Para clubes y academias profesionales"
+    },
+    "features": {
+      "teams": "equipos",
+      "goalkeepers": "porteros",
+      "tasks": "tareas personalizadas",
+      "sessions": "sesiones/mes",
+      "unlimited": "Ilimitado",
+      "tacticalEditor": "Editor táctico completo",
+      "statistics": "Estadísticas avanzadas",
+      "matchAnalysis": "Análisis de partidos",
+      "penaltyTracking": "Seguimiento de penaltis",
+      "exportPdf": "Exportar a PDF",
+      "prioritySupport": "Soporte prioritario",
+      "apiAccess": "Acceso API",
+      "onboarding": "Onboarding personalizado"
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "changePlan": {
+        "question": "¿Puedo cambiar de plan en cualquier momento?",
+        "answer": "Sí, puedes actualizar o degradar tu plan en cualquier momento. Los cambios se aplicarán inmediatamente y se prorratearán."
+      },
+      "paymentMethods": {
+        "question": "¿Qué métodos de pago aceptan?",
+        "answer": "Aceptamos todas las tarjetas de crédito y débito principales (Visa, Mastercard, American Express)."
+      },
+      "trial": {
+        "question": "¿Hay período de prueba?",
+        "answer": "Sí, el plan Pro incluye 7 días de prueba gratuita. No se te cobrará hasta que termine el período de prueba."
+      },
+      "cancel": {
+        "question": "¿Puedo cancelar mi suscripción?",
+        "answer": "Puedes cancelar tu suscripción en cualquier momento. Seguirás teniendo acceso hasta el final del período de facturación."
+      }
+    }
+  },
+  "billing": {
+    "title": "Facturación y Suscripción",
+    "subtitle": "Gestiona tu plan y métodos de pago",
+    "freePlan": "Plan Gratuito",
+    "freePlanDesc": "Actualmente estás en el plan gratuito",
+    "upgrade": "Mejorar plan",
+    "manageBilling": "Gestionar facturación",
+    "cancelSubscription": "Cancelar suscripción",
+    "reactivate": "Reactivar suscripción",
+    "confirmCancel": "¿Estás seguro de que quieres cancelar tu suscripción? Seguirás teniendo acceso hasta el final del período actual.",
+    "paymentSuccess": "¡Pago realizado con éxito! Tu suscripción está activa.",
+    "status": {
+      "active": "Activa",
+      "trialing": "Período de prueba",
+      "past_due": "Pago pendiente",
+      "cancelled": "Cancelada",
+      "inactive": "Inactiva"
+    },
+    "renewsOn": "Se renueva el",
+    "endsOn": "Finaliza el",
+    "trialEndsOn": "Prueba termina el",
+    "willCancel": "Se cancelará al finalizar el período",
+    "updatePayment": "Actualizar método de pago",
+    "usage": {
+      "title": "Uso del plan",
+      "teams": "Equipos",
+      "goalkeepers": "Porteros",
+      "tasks": "Tareas",
+      "sessions": "Sesiones este mes",
+      "unlimited": "Ilimitado",
+      "of": "de",
+      "limitReached": "Has alcanzado el límite de tu plan"
+    },
+    "features": {
+      "title": "Características de tu plan",
+      "included": "Incluido",
+      "notIncluded": "No incluido"
+    },
+    "invoices": {
+      "title": "Historial de facturas",
+      "noInvoices": "No hay facturas disponibles",
+      "date": "Fecha",
+      "amount": "Monto",
+      "status": "Estado",
+      "actions": "Acciones",
+      "view": "Ver",
+      "download": "Descargar",
+      "paid": "Pagada",
+      "open": "Pendiente",
+      "void": "Anulada"
+    }
+  },
+  "subscription": {
+    "upgradeRequired": "Mejora tu plan",
+    "upgradeMessage": "Esta función requiere un plan superior",
+    "limitReached": "Has alcanzado el límite de tu plan",
+    "limitMessage": "Para crear más {resource}, actualiza a un plan superior",
+    "viewPlans": "Ver planes"
   }
 }
