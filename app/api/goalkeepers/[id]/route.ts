@@ -35,7 +35,8 @@ export async function GET(
     // Verificar que el portero pertenece a un equipo del usuario
     if (goalkeeper.team_id) {
       const team = await TeamModel.findById(goalkeeper.team_id);
-      if (!team || team.user_id !== user.id) {
+      const authUserId = Number(user.id); 
+      if (!team || team.user_id !== authUserId) {
         return NextResponse.json(
           { error: 'No autorizado' },
           { status: 403 }
@@ -83,7 +84,8 @@ export async function PUT(
     // Verificar que el portero pertenece a un equipo del usuario
     if (goalkeeper.team_id) {
       const team = await TeamModel.findById(goalkeeper.team_id);
-      if (!team || team.user_id !== user.id) {
+      const authUserId = Number(user.id);
+      if (!team || team.user_id !== authUserId) {
         return NextResponse.json(
           { error: 'No autorizado' },
           { status: 403 }
@@ -99,7 +101,8 @@ export async function PUT(
     // Si se cambia el equipo, verificar que pertenece al usuario
     if (validatedData.team_id) {
       const newTeam = await TeamModel.findById(validatedData.team_id);
-      if (!newTeam || newTeam.user_id !== user.id) {
+      const authUserId = Number(user.id);
+      if (!newTeam || newTeam.user_id !== authUserId) {
         return NextResponse.json(
           { error: 'Equipo no válido' },
           { status: 400 }
@@ -155,7 +158,8 @@ export async function DELETE(
     // Verificar que el portero pertenece a un equipo del usuario
     if (goalkeeper.team_id) {
       const team = await TeamModel.findById(goalkeeper.team_id);
-      if (!team || team.user_id !== user.id) {
+      const authUserId = Number(user.id);
+      if (!team || team.user_id !== authUserId) {
         return NextResponse.json(
           { error: 'No autorizado' },
           { status: 403 }

@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     const { planSlug, billingCycle } = validation.data;
-    const userId = parseInt(authResult.user.id);
+    const userId = authResult.user.id;
 
     // Verificar si ya tiene una suscripción activa
     const existingSubscription = await getUserSubscription(userId);

@@ -35,7 +35,7 @@ export async function checkResourceLimit(
     };
   }
 
-  const userId = parseInt(authResult.user.id);
+  const userId = authResult.user.id;
   const canCreate = await canCreateResource(userId, resourceType);
 
   if (!canCreate) {
@@ -78,7 +78,7 @@ export async function checkFeatureAccess(
     };
   }
 
-  const userId = parseInt(authResult.user.id);
+  const userId = authResult.user.id;
   const hasAccess = await canAccessFeature(userId, feature);
 
   if (!hasAccess) {

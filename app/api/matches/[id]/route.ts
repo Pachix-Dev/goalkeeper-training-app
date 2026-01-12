@@ -12,9 +12,9 @@ export const GET = requireAuth(async (request: NextRequest, user: AuthUser, cont
     const matchId = parseInt(id);
 
     const match = await MatchAnalysisModel.findById(matchId);
-
+    const authUserId = Number(user.id);
     // Verificar que el análisis pertenece al usuario
-    if (match.created_by !== user.id) {
+    if (match.created_by !== authUserId) {
       return NextResponse.json(
         { error: 'No autorizado' },
         { status: 403 }
@@ -44,10 +44,10 @@ export const PUT = requireAuth(async (request: NextRequest, user: AuthUser, cont
     const { params } = context!;
     const { id } = await params;
     const matchId = parseInt(id);
-
+    const authUserId = Number(user.id);
     // Verificar que el análisis pertenece al usuario
     const match = await MatchAnalysisModel.findById(matchId);
-    if (match.created_by !== user.id) {
+    if (match.created_by !== authUserId) {
       return NextResponse.json(
         { error: 'No autorizado' },
         { status: 403 }
@@ -91,10 +91,10 @@ export const DELETE = requireAuth(async (request: NextRequest, user: AuthUser, c
     const { params } = context!;
     const { id } = await params;
     const matchId = parseInt(id);
-
+    const authUserId = Number(user.id);
     // Verificar que el análisis pertenece al usuario
     const match = await MatchAnalysisModel.findById(matchId);
-    if (match.created_by !== user.id) {
+    if (match.created_by !== authUserId) {
       return NextResponse.json(
         { error: 'No autorizado' },
         { status: 403 }

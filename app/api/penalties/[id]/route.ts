@@ -7,6 +7,7 @@ import { ZodError } from 'zod';
 // GET /api/penalties/[id] - Obtener penalti
 export const GET = requireAuth(async (request: NextRequest, user: AuthUser, context?: { params: Promise<{ id: string }> }) => {
   try {
+    const authUserId = Number(user.id);
     const { params } = context!;
     const { id } = await params;
     const penaltyId = parseInt(id);
@@ -14,7 +15,7 @@ export const GET = requireAuth(async (request: NextRequest, user: AuthUser, cont
     const penalty = await PenaltyModel.findById(penaltyId);
 
     // Verificar que el penalti pertenece al usuario
-    if (penalty.created_by !== user.id) {
+    if (penalty.created_by !== authUserId) {
       return NextResponse.json(
         { error: 'No autorizado' },
         { status: 403 }
@@ -41,13 +42,14 @@ export const GET = requireAuth(async (request: NextRequest, user: AuthUser, cont
 // PUT /api/penalties/[id] - Actualizar penalti
 export const PUT = requireAuth(async (request: NextRequest, user: AuthUser, context?: { params: Promise<{ id: string }> }) => {
   try {
+    const authUserId = Number(user.id);
     const { params } = context!;
     const { id } = await params;
     const penaltyId = parseInt(id);
 
     // Verificar que el penalti pertenece al usuario
     const penalty = await PenaltyModel.findById(penaltyId);
-    if (penalty.created_by !== user.id) {
+    if (penalty.created_by !== authUserId) {
       return NextResponse.json(
         { error: 'No autorizado' },
         { status: 403 }
@@ -88,13 +90,14 @@ export const PUT = requireAuth(async (request: NextRequest, user: AuthUser, cont
 // DELETE /api/penalties/[id] - Eliminar penalti
 export const DELETE = requireAuth(async (request: NextRequest, user: AuthUser, context?: { params: Promise<{ id: string }> }) => {
   try {
+    const authUserId = Number(user.id);
     const { params } = context!;
     const { id } = await params;
     const penaltyId = parseInt(id);
 
     // Verificar que el penalti pertenece al usuario
     const penalty = await PenaltyModel.findById(penaltyId);
-    if (penalty.created_by !== user.id) {
+    if (penalty.created_by !== authUserId) {
       return NextResponse.json(
         { error: 'No autorizado' },
         { status: 403 }

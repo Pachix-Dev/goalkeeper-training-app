@@ -16,7 +16,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<Params
     const resolvedParams = await params;
     const id = parseInt(resolvedParams.id, 10);    
     const design = await TrainingDesignModel.findById(id);
-    if (design.user_id !== auth.id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const authUserId = Number(auth.id);
+    if (design.user_id !== authUserId) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     return NextResponse.json({ design });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : 'Unknown error';
@@ -39,7 +40,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<Params
     if (imageDataUrl) {
       // Obtener el diseño actual para eliminar la imagen anterior si existe
       const currentDesign = await TrainingDesignModel.findById(id);
-      if (currentDesign.user_id !== auth.id) {
+      const authUserId = Number(auth.id);
+      if (currentDesign.user_id !== authUserId) {
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       }
       
@@ -67,7 +69,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<Params
     }
     
     const validated = updateDesignSchema.parse(designData);
-    const updated = await TrainingDesignModel.update(id, auth.id, {
+    const authUserId = Number(auth.id);
+    const updated = await TrainingDesignModel.update(id, authUserId, {
       ...validated,
       img: imgFilename
     });
@@ -88,7 +91,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<Par
     if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     const resolvedParams = await params;
     const id = parseInt(resolvedParams.id, 10);
-    await TrainingDesignModel.delete(id, auth.id);
+    const authUserId = Number(auth.id);
+    await TrainingDesignModel.delete(id, authUserId);
     return NextResponse.json({ success: true });
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : 'Unknown error';

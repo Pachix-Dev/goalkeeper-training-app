@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userId = parseInt(authResult.user.id);
+    const userId = authResult.user.id;
 
     // Obtener la suscripción del usuario
     const subscription = await getUserSubscription(userId);

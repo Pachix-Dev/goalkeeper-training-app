@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const userId = parseInt(authResult.user.id);
+    const userId = authResult.user.id;
     const { searchParams } = new URL(req.url);
     const include = searchParams.get('include')?.split(',') || [];
 
@@ -90,7 +90,7 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const userId = parseInt(authResult.user.id);
+    const userId = authResult.user.id;
     const body = await req.json();
     const { action } = body;
 

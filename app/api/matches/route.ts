@@ -7,6 +7,7 @@ import { ZodError } from 'zod';
 // GET /api/matches - Obtener análisis de partidos
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
+    const userId = Number(user.id);
     const { searchParams } = new URL(request.url);
     const goalkeeperId = searchParams.get('goalkeeper_id');
     const opponent = searchParams.get('opponent');
@@ -23,16 +24,16 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     }
 
     if (opponent) {
-      const matches = await MatchAnalysisModel.searchByOpponent(user.id, opponent);
+      const matches = await MatchAnalysisModel.searchByOpponent(userId, opponent);
       return NextResponse.json(matches);
     }
 
     if (startDate && endDate) {
-      const matches = await MatchAnalysisModel.findByDateRange(user.id, startDate, endDate);
+      const matches = await MatchAnalysisModel.findByDateRange(userId, startDate, endDate);
       return NextResponse.json(matches);
     }
 
-    const matches = await MatchAnalysisModel.findByUser(user.id);
+    const matches = await MatchAnalysisModel.findByUser(userId);
     return NextResponse.json(matches);
   } catch (error) {
     console.error('Error fetching matches:', error);
@@ -46,6 +47,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 // POST /api/matches - Crear análisis de partido
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
+    const userId = Number(user.id);
     const body = await request.json();
     
     // Validar con Zod
@@ -53,7 +55,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     const match = await MatchAnalysisModel.create({
       ...validatedData,
-      created_by: user.id,
+      created_by: userId,
     });
 
     return NextResponse.json(match, { status: 201 });

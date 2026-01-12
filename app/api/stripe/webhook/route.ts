@@ -21,13 +21,6 @@ import { SubscriptionStatus, InvoiceStatus, BillingCycle } from '@/lib/types/sub
 
 export const dynamic = 'force-dynamic';
 
-// Desactivar el body parser de Next.js para webhooks
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const signature = req.headers.get('stripe-signature');

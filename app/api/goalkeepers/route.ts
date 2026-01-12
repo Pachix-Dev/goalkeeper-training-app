@@ -13,13 +13,14 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     const search = searchParams.get('search');
 
     let goalkeepers;
-
+    const authUserId = Number(user.id);
     if (search) {
-      goalkeepers = await GoalkeeperModel.search(user.id, search);
+      goalkeepers = await GoalkeeperModel.search(authUserId, search);
     } else if (teamId) {
       // Verificar que el equipo pertenece al usuario
       const team = await TeamModel.findById(parseInt(teamId));
-      if (!team || team.user_id !== user.id) {
+      
+      if (!team || team.user_id !== authUserId) {
         return NextResponse.json(
           { error: 'No autorizado' },
           { status: 403 }
@@ -27,7 +28,7 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
       }
       goalkeepers = await GoalkeeperModel.findByTeam(parseInt(teamId));
     } else {
-      goalkeepers = await GoalkeeperModel.findByCoach(user.id);
+      goalkeepers = await GoalkeeperModel.findByCoach(authUserId);
     }
 
     return NextResponse.json(goalkeepers);
@@ -51,7 +52,8 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
     // Si se especifica un equipo, verificar que pertenece al usuario
     if (validatedData.team_id) {
       const team = await TeamModel.findById(validatedData.team_id);
-      if (!team || team.user_id !== user.id) {
+      const authUserId = Number(user.id);
+      if (!team || team.user_id !== authUserId) {
         return NextResponse.json(
           { error: 'Equipo no válido' },
           { status: 400 }

@@ -8,6 +8,7 @@ import { checkResourceLimit } from '@/lib/auth/subscriptionMiddleware';
 // GET /api/tasks - Obtener tareas disponibles
 export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
+    const userId = Number(user.id);
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     const search = searchParams.get('search');
@@ -18,16 +19,16 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
     if (search) {
       // Intentar búsqueda FULLTEXT primero, si falla usar búsqueda simple
       try {
-        tasks = await TaskModel.search(user.id, search);
+        tasks = await TaskModel.search(userId, search);
       } catch {
-        tasks = await TaskModel.searchSimple(user.id, search);
+        tasks = await TaskModel.searchSimple(userId, search);
       }
     } else if (category) {
-      tasks = await TaskModel.findByCategory(user.id, category);
+      tasks = await TaskModel.findByCategory(userId, category);
     } else if (myTasks) {
-      tasks = await TaskModel.findByUser(user.id);
+      tasks = await TaskModel.findByUser(userId);
     } else {
-      tasks = await TaskModel.findAvailable(user.id);
+      tasks = await TaskModel.findAvailable(userId);
     }
 
     return NextResponse.json(tasks);
