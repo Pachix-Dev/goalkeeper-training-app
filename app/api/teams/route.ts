@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { TeamModel } from '@/lib/db/models/TeamModel';
 import { requireAuth } from '@/lib/auth/middleware';
 import { createTeamSchema } from '@/lib/validations/team';
-import { ZodError } from 'zod';
+import { json, ZodError } from 'zod';
+import { checkResourceLimit } from '@/lib/auth/subscriptionMiddleware';
 
 // GET /api/teams - Obtener equipos del usuario
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -12,9 +13,9 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 
     let teams;
     if (season) {
-      teams = await TeamModel.findBySeason(user.id, season);
+      teams = await TeamModel.findBySeason(Number(user.id), season);
     } else {
-      teams = await TeamModel.findWithStats(user.id);
+      teams = await TeamModel.findWithStats(Number(user.id));
     }
 
     return NextResponse.json({ teams });
@@ -30,12 +31,17 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 // POST /api/teams - Crear equipo
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
+
+    const limitCheck = await checkResourceLimit(request, 'teams');
+    if (!limitCheck.allowed) {             
+      return limitCheck.response ?? NextResponse.json({ error: 'Acceso denegado por límite de recursos' }, { status: 403 });
+    }
+
     const body = await request.json();
-    
     // Validar con Zod
     const validatedData = createTeamSchema.parse(body);
 
-    const team = await TeamModel.create(user.id, {
+    const team = await TeamModel.create(Number(user.id), {
       ...validatedData,
       description: validatedData.description ?? undefined
     });

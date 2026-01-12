@@ -3,6 +3,7 @@ import { TaskModel } from '@/lib/db/models/TaskModel';
 import { requireAuth } from '@/lib/auth/middleware';
 import { createTaskSchema } from '@/lib/validations/task';
 import { ZodError } from 'zod';
+import { checkResourceLimit } from '@/lib/auth/subscriptionMiddleware';
 
 // GET /api/tasks - Obtener tareas disponibles
 export const GET = requireAuth(async (request: NextRequest, user) => {
@@ -42,6 +43,11 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
 // POST /api/tasks - Crear tarea
 export const POST = requireAuth(async (request: NextRequest, user) => {
   try {
+    const limitCheck = await checkResourceLimit(request, 'tasks');
+    if (!limitCheck.allowed) {             
+      return limitCheck.response ?? NextResponse.json({ error: 'Acceso denegado por límite de recursos' }, { status: 403 });
+    }
+
     const body = await request.json();
     
     // Validar con Zod
@@ -49,7 +55,7 @@ export const POST = requireAuth(async (request: NextRequest, user) => {
 
     const task = await TaskModel.create({
       ...validatedData,
-      user_id: user.id,
+      user_id: Number(user.id),
     });
 
     return NextResponse.json(task, { status: 201 });

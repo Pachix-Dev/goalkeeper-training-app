@@ -44,7 +44,7 @@ export async function checkResourceLimit(
       allowed: false,
       response: NextResponse.json(
         {
-          error: 'Límite de plan alcanzado',
+          error: 'Límite de plan alcanzado. Actualiza a un plan superior para continuar.',
           code: 'SUBSCRIPTION_LIMIT_REACHED',
           resourceType,
           current: limits[resourceType].current,

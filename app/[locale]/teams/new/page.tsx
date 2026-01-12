@@ -39,7 +39,7 @@ export default function NewTeamPage() {
     try {
       await apiPost('/api/teams', formData);
       router.push(`/${locale}/teams`);
-    } catch (err) {
+    } catch (err) {      
       setError(err instanceof Error ? err.message : t('errorCreating'));
     } finally {
       setIsLoading(false);

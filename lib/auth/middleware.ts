@@ -32,6 +32,7 @@ export async function verifyToken(request: NextRequest): Promise<VerifyTokenResu
     
     return { success: true, user: decoded };
   } catch (error) {
+    console.error('Error verificando token:', error);
     return { success: false, error: 'Token inválido' };
   }
 }
