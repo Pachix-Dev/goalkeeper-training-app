@@ -10,14 +10,14 @@ export const GET = requireAuth(async (request: NextRequest, user) => {
   try {
     const { searchParams } = new URL(request.url);
     const season = searchParams.get('season');
-
+    
     let teams;
     if (season) {
       teams = await TeamModel.findBySeason(Number(user.id), season);
     } else {
-      teams = await TeamModel.findWithStats(Number(user.id));
+      teams = await TeamModel.findByUser(Number(user.id));
     }
-
+    
     return NextResponse.json({ teams });
   } catch (error) {
     console.error('Error fetching teams:', error);
