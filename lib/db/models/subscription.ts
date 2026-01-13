@@ -494,12 +494,13 @@ export async function createInvoice(data: {
  * Obtiene las facturas de un usuario
  */
 export async function getUserInvoices(userId: number, limit: number = 10): Promise<SubscriptionInvoice[]> {
+  const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.min(100, Math.floor(limit))) : 10;
   const [rows] = await pool.execute<RowDataPacket[]>(
     `SELECT * FROM subscription_invoices 
      WHERE user_id = ? 
      ORDER BY created_at DESC 
-     LIMIT ?`,
-    [userId, limit]
+     LIMIT ${safeLimit}`,
+    [userId]
   );
 
   return rows as SubscriptionInvoice[];
