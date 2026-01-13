@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { TeamModel } from '@/lib/db/models/TeamModel';
 import { requireAuth } from '@/lib/auth/middleware';
 import { createTeamSchema } from '@/lib/validations/team';
-import { json, ZodError } from 'zod';
+import { ZodError } from 'zod';
 import { checkResourceLimit } from '@/lib/auth/subscriptionMiddleware';
 
 // GET /api/teams - Obtener equipos del usuario

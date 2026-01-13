@@ -45,8 +45,10 @@ export class TeamModel {
   // Buscar con estadísticas
   static async findWithStats(userId: number): Promise<TeamWithStats[]> {
     const sql = `
-      SELECT * FROM vw_teams_summary
-      WHERE coach_name = (SELECT name FROM users WHERE id = ?)
+      SELECT v.*
+      FROM vw_teams_summary v
+      JOIN teams t ON t.id = v.id
+      WHERE t.user_id = ? AND t.is_active = TRUE
       ORDER BY season DESC, name ASC
     `;
     return query<TeamWithStats[]>(sql, [userId]);

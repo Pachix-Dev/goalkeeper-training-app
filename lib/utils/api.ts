@@ -51,7 +51,7 @@ export async function authenticatedFetch(
  * @param url - The API endpoint URL
  * @returns Promise with the parsed JSON data
  */
-export async function apiGet<T = any>(url: string): Promise<T> {
+export async function apiGet<T = unknown>(url: string): Promise<T> {
   const response = await authenticatedFetch(url, { method: 'GET' });
   
   if (!response.ok) {
@@ -69,7 +69,7 @@ export async function apiGet<T = any>(url: string): Promise<T> {
  * @param data - The data to send in the request body
  * @returns Promise with the parsed JSON response
  */
-export async function apiPost<T = any>(url: string, data: any): Promise<T> {
+export async function apiPost<T = unknown>(url: string, data: unknown): Promise<T> {
   const response = await authenticatedFetch(url, {
     method: 'POST',
     body: JSON.stringify(data),
@@ -90,7 +90,7 @@ export async function apiPost<T = any>(url: string, data: any): Promise<T> {
  * @param data - The data to send in the request body
  * @returns Promise with the parsed JSON response
  */
-export async function apiPut<T = any>(url: string, data: any): Promise<T> {
+export async function apiPut<T = unknown>(url: string, data: unknown): Promise<T> {
   const response = await authenticatedFetch(url, {
     method: 'PUT',
     body: JSON.stringify(data),
@@ -110,7 +110,7 @@ export async function apiPut<T = any>(url: string, data: any): Promise<T> {
  * @param url - The API endpoint URL
  * @returns Promise with the parsed JSON response
  */
-export async function apiDelete<T = any>(url: string): Promise<T> {
+export async function apiDelete<T = unknown>(url: string): Promise<T> {
   const response = await authenticatedFetch(url, {
     method: 'DELETE',
   });
