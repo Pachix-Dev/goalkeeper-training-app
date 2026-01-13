@@ -102,8 +102,8 @@ export default function EditPenaltyPage({
 
   const loadGoalkeepers = async () => {
     try {
-      const data = await apiGet('/api/goalkeepers');
-      setGoalkeepers(Array.isArray(data) ? data : data.goalkeepers || []);
+      const data = await apiGet<Goalkeeper[]>('/api/goalkeepers');
+      setGoalkeepers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading goalkeepers:', error);
     }
@@ -128,8 +128,8 @@ export default function EditPenaltyPage({
 
       await apiPut(`/api/penalties/${resolvedParams!.id}`, payload);
       router.push(`/${resolvedParams!.locale}/penalties/${resolvedParams!.id}`);
-    } catch (error: any) {
-      setError(error.message || t('errors.failedToUpdate'));
+    } catch (error: unknown) {
+      setError((error as Error).message || t('errors.failedToUpdate'));
       setSaving(false);
     }
   };

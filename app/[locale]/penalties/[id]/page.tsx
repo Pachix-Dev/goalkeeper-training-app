@@ -51,7 +51,7 @@ export default function PenaltyDetailPage({
 
   const loadPenalty = async () => {
     try {
-      const data = await apiGet(`/api/penalties/${resolvedParams!.id}`);
+      const data = await apiGet<Penalty>(`/api/penalties/${resolvedParams!.id}`);
       setPenalty(data);
     } catch (error) {
       console.error('Error loading penalty:', error);

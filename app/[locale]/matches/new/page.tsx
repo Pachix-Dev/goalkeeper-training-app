@@ -53,8 +53,8 @@ export default function NewMatchPage({ params }: { params: Promise<{ locale: str
 
   const loadGoalkeepers = async () => {
     try {
-      const data = await apiGet('/api/goalkeepers');
-      setGoalkeepers(Array.isArray(data) ? data : data.goalkeepers || []);
+      const data = await apiGet<Goalkeeper[]>('/api/goalkeepers');
+      setGoalkeepers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading goalkeepers:', error);
     }
@@ -86,7 +86,7 @@ export default function NewMatchPage({ params }: { params: Promise<{ locale: str
       if (formData.notes) data.notes = formData.notes;
       if (formData.video_url) data.video_url = formData.video_url;
 
-      const match = await apiPost('/api/matches', data);
+      const match = await apiPost<{ id: number }>('/api/matches', data);
       
       router.push(`/${resolvedParams!.locale}/matches/${match.id}`);
     } catch (error: unknown) {

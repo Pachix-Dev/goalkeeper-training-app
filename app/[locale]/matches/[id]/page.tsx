@@ -47,7 +47,7 @@ export default function MatchDetailPage({
 
   const loadMatch = useCallback(async () => {
     try {
-      const data = await apiGet(`/api/matches/${resolvedParams!.id}`);
+      const data = await apiGet<MatchAnalysis>(`/api/matches/${resolvedParams!.id}`);
       setMatch(data);
     } catch (error) {
       console.error('Error loading match:', error);

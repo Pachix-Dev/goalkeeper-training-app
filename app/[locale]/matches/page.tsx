@@ -44,8 +44,8 @@ export default function MatchesPage({ params }: { params: Promise<{ locale: stri
 
       // Load goalkeepers for filter
       if (goalkeepers.length === 0) {
-        const gkData = await apiGet('/api/goalkeepers');
-        setGoalkeepers(Array.isArray(gkData) ? gkData : gkData.goalkeepers || []);
+        const gkData = await apiGet<Goalkeeper[]>('/api/goalkeepers');
+        setGoalkeepers(Array.isArray(gkData) ? gkData : []);
       }
 
       // Load matches with filters
@@ -55,8 +55,8 @@ export default function MatchesPage({ params }: { params: Promise<{ locale: stri
         url += `?goalkeeper_id=${selectedGoalkeeper}`;
       }
 
-      const matchesData = await apiGet(url);
-      setMatches(matchesData);
+      const matchesData = await apiGet<MatchAnalysis[]>(url);
+      setMatches(Array.isArray(matchesData) ? matchesData : []);
     } catch (error) {
       console.error('Error loading matches:', error);
     } finally {

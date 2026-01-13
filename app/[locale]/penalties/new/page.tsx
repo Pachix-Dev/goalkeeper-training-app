@@ -50,8 +50,8 @@ export default function NewPenaltyPage({ params }: { params: Promise<{ locale: s
 
   const loadGoalkeepers = async () => {
     try {
-      const data = await apiGet('/api/goalkeepers');
-      setGoalkeepers(Array.isArray(data) ? data : data.goalkeepers || []);
+      const data = await apiGet<Goalkeeper[]>('/api/goalkeepers');
+      setGoalkeepers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading goalkeepers:', error);
     }
@@ -64,7 +64,7 @@ export default function NewPenaltyPage({ params }: { params: Promise<{ locale: s
 
     try {
       // Prepare data
-      const data: any = {
+      const data: Record<string, unknown> = {
         goalkeeper_id: parseInt(formData.goalkeeper_id),
         opponent_name: formData.opponent_name,
         penalty_taker: formData.penalty_taker,
@@ -80,11 +80,11 @@ export default function NewPenaltyPage({ params }: { params: Promise<{ locale: s
       if (formData.notes) data.notes = formData.notes;
       if (formData.video_url) data.video_url = formData.video_url;
 
-      const penalty = await apiPost('/api/penalties', data);
+      const penalty = await apiPost<{ id: number }>('/api/penalties', data);
       
       router.push(`/${resolvedParams!.locale}/penalties/${penalty.id}`);
-    } catch (error: any) {
-      setError(error.message || tCommon('errorSaving'));
+    } catch (error: unknown) {
+      setError((error as Error).message || tCommon('errorSaving'));
     } finally {
       setLoading(false);
     }

@@ -51,8 +51,8 @@ export default function PenaltiesPage({ params }: { params: Promise<{ locale: st
 
       // Load goalkeepers for filter
       if (goalkeepers.length === 0) {
-        const gkData = await apiGet('/api/goalkeepers');
-        setGoalkeepers(Array.isArray(gkData) ? gkData : gkData.goalkeepers || []);
+        const gkData = await apiGet<Goalkeeper[]>('/api/goalkeepers');
+        setGoalkeepers(Array.isArray(gkData) ? gkData : []);
       }
 
       // Load penalties with filters
@@ -67,11 +67,11 @@ export default function PenaltiesPage({ params }: { params: Promise<{ locale: st
         url += `?${params.toString()}`;
       }
 
-      let penaltiesData = await apiGet(url);
+      let penaltiesData = await apiGet<Penalty[]>(url);
 
       // Filter by result on client side
       if (selectedResult) {
-        penaltiesData = penaltiesData.filter((p: Penalty) => p.result === selectedResult);
+        penaltiesData = penaltiesData.filter((p) => p.result === selectedResult);
       }
 
       setPenalties(penaltiesData);

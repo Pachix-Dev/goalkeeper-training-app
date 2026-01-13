@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -71,14 +71,7 @@ export default function EditMatchPage({
     params.then(setResolvedParams);
   }, [params]);
 
-  useEffect(() => {
-    if (resolvedParams) {
-      loadMatch();
-      loadGoalkeepers();
-    }
-  }, [resolvedParams]);
-
-  const loadMatch = async () => {
+  const loadMatch = useCallback(async () => {
     try {
       const data = await apiGet<MatchAnalysis>(`/api/matches/${resolvedParams!.id}`);
       setMatch(data);
@@ -108,16 +101,23 @@ export default function EditMatchPage({
     } finally {
       setLoading(false);
     }
-  };
+  }, [resolvedParams, tCommon]);
 
-  const loadGoalkeepers = async () => {
+  const loadGoalkeepers = useCallback(async () => {
     try {
-      const data = await apiGet('/api/goalkeepers');
-      setGoalkeepers(Array.isArray(data) ? data : data.goalkeepers || []);
+      const data = await apiGet<Goalkeeper[]>('/api/goalkeepers');
+      setGoalkeepers(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading goalkeepers:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (resolvedParams) {
+      void loadMatch();
+      void loadGoalkeepers();
+    }
+  }, [resolvedParams, loadMatch, loadGoalkeepers]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
